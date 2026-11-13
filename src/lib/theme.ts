@@ -1,0 +1,84 @@
+/**
+ * Thème marque blanche : chaque box fournit une couleur principale (barres, fonds de marque)
+ * et une couleur d'accent (boutons d'action, repères). Le reste de la palette est fixe.
+ */
+import { BRAND_FALLBACK } from '@/config/box';
+import { KIND_COLORS, type BlockKind, type KindColors } from '@/lib/types';
+
+function rgb(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)) as [number, number, number];
+}
+
+export function luminance(hex: string): number {
+  const [r, g, b] = rgb(hex).map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+export function contrast(a: string, b: string): number {
+  const [l1, l2] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (l1 + 0.05) / (l2 + 0.05);
+}
+
+/** Texte lisible (blanc ou quasi-noir) sur un fond donné. */
+export function onColor(bg: string): string {
+  return contrast(bg, '#FFFFFF') >= contrast(bg, '#111111') ? '#FFFFFF' : '#111111';
+}
+
+export function isHex(v: string) {
+  return /^#[0-9A-Fa-f]{6}$/.test(v);
+}
+
+/** Mélange `hex` avec `other` ; t = part de `other` (0 → hex, 1 → other). */
+export function mix(hex: string, other: string, t: number): string {
+  const a = rgb(hex), b = rgb(other);
+  return '#' + a.map((v, i) => Math.round(v + (b[i] - v) * t).toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+export interface Palette {
+  primary: string;
+  onPrimary: string;
+  /** Texte secondaire sur la couleur principale. */
+  onPrimaryMuted: string;
+  accent: string;
+  onAccent: string;
+  /** Couleur principale assez foncée pour un texte ou un lien sur fond blanc. */
+  ink: string;
+  background: string;
+  surface: string;
+  text: string;
+  muted: string;
+  border: string;
+  danger: string;
+}
+
+/** Couleur d’un type de bloc : custom box si définie, sinon défaut Boxprog. */
+export function kindColor(kind: BlockKind, custom?: KindColors | null): string {
+  const c = custom?.[kind];
+  return c && isHex(c) ? c : KIND_COLORS[kind] ?? '#475569';
+}
+
+export function makePalette(primary = BRAND_FALLBACK.primary, accent = BRAND_FALLBACK.accent): Palette {
+  const p = isHex(primary) ? primary : BRAND_FALLBACK.primary;
+  const a = isHex(accent) ? accent : BRAND_FALLBACK.accent;
+  const onPrimary = onColor(p);
+  let ink = p;
+  while (contrast(ink, '#FFFFFF') < 4.5) ink = mix(ink, '#000000', 0.15);
+  return {
+    primary: p,
+    onPrimary,
+    onPrimaryMuted: mix(onPrimary, p, 0.4),
+    accent: a,
+    onAccent: onColor(a),
+    ink,
+    background: '#EDF0F5',
+    surface: '#FFFFFF',
+    text: '#111827',
+    muted: '#5B6475',
+    border: '#DCE1EA',
+    danger: '#B91C1C',
+  };
+}
