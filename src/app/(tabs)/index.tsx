@@ -1,8 +1,9 @@
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BlockCard } from '@/components/today/BlockCard';
-import { BlockSheet, type SheetTab } from '@/components/today/BlockSheet';
+import { BlockSheet } from '@/components/today/BlockSheet';
 import { TodayHeader } from '@/components/today/TodayHeader';
 import { TrackDrawer } from '@/components/today/TrackDrawer';
 import { useFeedbacks } from '@/hooks/useFeedbacks';
@@ -26,7 +27,7 @@ export default function TodayScreen() {
   const [day, setDay] = useState(today);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
-  const [sheet, setSheet] = useState<{ block: Block; tab: SheetTab } | null>(null);
+  const [sheetBlock, setSheetBlock] = useState<Block | null>(null);
 
   const monday = mondayOf(day);
   const weekDays = useMemo(() => fullWeek(monday), [monday]);
@@ -53,7 +54,7 @@ export default function TodayScreen() {
   };
 
   const closeSheet = () => {
-    setSheet(null);
+    setSheetBlock(null);
     scores.reload();
     feedbacks.reload();
   };
@@ -87,7 +88,8 @@ export default function TodayScreen() {
               myScore={scores.mine.get(b.id)}
               scoreCount={scores.count.get(b.id) || 0}
               myFeedback={feedbacks.mine.get(b.id)}
-              onOpen={(tab) => setSheet({ block: b, tab })}
+              onNote={() => setSheetBlock(b)}
+              onScores={() => router.push(`/scores/${b.id}`)}
             />
           ))
         )}
@@ -101,12 +103,11 @@ export default function TodayScreen() {
         onClose={() => setDrawerOpen(false)}
       />
 
-      {sheet ? (
+      {sheetBlock ? (
         <BlockSheet
-          key={sheet.block.id + sheet.tab}
-          block={sheet.block}
-          initialTab={sheet.tab}
-          myFeedback={feedbacks.mine.get(sheet.block.id)}
+          key={sheetBlock.id}
+          block={sheetBlock}
+          myFeedback={feedbacks.mine.get(sheetBlock.id)}
           memberLevel={level}
           onClose={closeSheet}
         />

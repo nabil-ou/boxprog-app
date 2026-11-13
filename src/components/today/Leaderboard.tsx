@@ -1,41 +1,47 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { LevelChips } from '@/components/today/LevelChips';
 import { compareScores, showScore } from '@/lib/scoring';
 import type { Block, Level, ScoreRow } from '@/lib/types';
 import { useBrand } from '@/providers/BoxProvider';
+
+const LEVEL_ORDER: Record<Level, number> = { RX: 0, Inter: 1, Scaled: 2 };
 
 export function Leaderboard({
   block,
   rows,
   me,
   onBump,
-  level,
-  setLevel,
 }: {
   block: Block;
   rows: ScoreRow[] | null;
   me: string;
   onBump: (r: ScoreRow) => void;
-  level: Level;
-  setLevel: (l: Level) => void;
 }) {
   const c = useBrand();
   const [sex, setSex] = useState<'all' | 'F' | 'H'>('all');
   const t = block.score_type;
-  const list = useMemo(
-    () =>
-      (rows || [])
-        .filter((r) => r.level === level && (sex === 'all' || r.membership?.sex === sex))
-        .sort(compareScores(t)),
-    [rows, level, sex, t],
-  );
+  const list = useMemo(() => {
+    const filtered = (rows || []).filter((r) => sex === 'all' || r.membership?.sex === sex);
+    const byScore = compareScores(t);
+    return [...filtered].sort((a, b) => {
+      const byLevel = LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level];
+      return byLevel || byScore(a, b);
+    });
+  }, [rows, sex, t]);
+
+  const ranks = useMemo(() => {
+    const map = new Map<string, number>();
+    const count: Record<Level, number> = { RX: 0, Inter: 0, Scaled: 0 };
+    for (const r of list) {
+      count[r.level] += 1;
+      map.set(r.id, count[r.level]);
+    }
+    return map;
+  }, [list]);
 
   return (
     <View style={styles.wrap}>
-      <Text style={[styles.title, { color: c.text }]}>Leaderboard</Text>
-      <LevelChips value={level} onChange={setLevel} />
       <View style={styles.filters}>
         {([
           ['all', 'Tous'],
@@ -59,27 +65,32 @@ export function Leaderboard({
       {!rows ? (
         <ActivityIndicator color={c.primary} style={{ marginTop: 24 }} />
       ) : !list.length ? (
-        <Text style={[styles.empty, { color: c.muted }]}>Aucun score {level} pour l’instant. Sois le premier !</Text>
+        <Text style={[styles.empty, { color: c.muted }]}>Aucun score pour l’instant. Sois le premier !</Text>
       ) : (
         <View style={styles.list}>
-          {list.map((r, i) => {
+          {list.map((r) => {
             const isMe = r.user_id === me;
             const bumped = r.bumps.some((x) => x.user_id === me);
             const name = r.membership?.display_name || 'Adhérent';
+            const rank = ranks.get(r.id) ?? 0;
             return (
               <View
                 key={r.id}
                 style={[
                   styles.row,
-                  { backgroundColor: isMe ? mixSoft(c.primary) : c.background, borderColor: c.border },
+                  { backgroundColor: isMe ? mixSoft(c.primary) : c.surface, borderColor: c.border },
                 ]}>
-                <Text style={[styles.rank, { color: i === 0 ? c.accent : c.muted }]}>{i + 1}</Text>
+                <Text style={[styles.rank, { color: rank === 1 ? c.accent : c.muted }]}>{rank}</Text>
                 <View style={styles.meta}>
-                  <Text style={[styles.name, { color: c.text }]}>
-                    {name}
-                    {isMe ? ' (toi)' : ''}
-                  </Text>
-                  <Text style={{ color: c.muted, fontSize: 13 }}>{r.level}</Text>
+                  <View style={styles.nameRow}>
+                    <Text style={[styles.name, { color: c.text }]} numberOfLines={1}>
+                      {name}
+                      {isMe ? ' (toi)' : ''}
+                    </Text>
+                    <View style={[styles.tag, { backgroundColor: soft(c.accent) }]}>
+                      <Text style={[styles.tagText, { color: c.ink }]}>{r.level}</Text>
+                    </View>
+                  </View>
                 </View>
                 <Text style={[styles.value, { color: c.text }]}>{showScore(t, r.value)}</Text>
                 {isMe ? (
@@ -98,6 +109,14 @@ export function Leaderboard({
   );
 }
 
+function soft(hex: string) {
+  const h = hex.replace('#', '');
+  if (h.length !== 6) return '#F3F4F6';
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const mix = (v: number) => Math.round(v * 0.16 + 255 * 0.84);
+  return `#${[r, g, b].map((v) => mix(v).toString(16).padStart(2, '0')).join('')}`;
+}
+
 function mixSoft(hex: string) {
   const h = hex.replace('#', '');
   if (h.length !== 6) return '#F3F4F6';
@@ -109,10 +128,7 @@ function mixSoft(hex: string) {
 const styles = StyleSheet.create({
   wrap: {
     gap: 12,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '800',
+    flex: 1,
   },
   filters: {
     flexDirection: 'row',
@@ -151,11 +167,26 @@ const styles = StyleSheet.create({
   },
   meta: {
     flex: 1,
-    gap: 2,
+    minWidth: 0,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   name: {
+    flexShrink: 1,
     fontSize: 15,
     fontWeight: '700',
+  },
+  tag: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  tagText: {
+    fontSize: 11,
+    fontWeight: '800',
   },
   value: {
     fontSize: 16,

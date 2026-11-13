@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SymbolView } from 'expo-symbols';
 
-import { blockSubtitle, blockTitle, levelText, showScore } from '@/lib/scoring';
+import { blockSubtitle, blockTitle, levelText } from '@/lib/scoring';
+import { symbol } from '@/lib/symbols';
 import { kindColor } from '@/lib/theme';
 import { feedbackOn, type Block, type BoxPublic, type Feedback, type KindColors, type Level } from '@/lib/types';
 import { useBrand } from '@/providers/BoxProvider';
-
-import type { SheetTab } from './BlockSheet';
 
 export function BlockCard({
   block,
@@ -16,7 +16,8 @@ export function BlockCard({
   myScore,
   scoreCount,
   myFeedback,
-  onOpen,
+  onNote,
+  onScores,
 }: {
   block: Block;
   level: Level;
@@ -25,7 +26,8 @@ export function BlockCard({
   myScore?: number;
   scoreCount?: number;
   myFeedback?: Feedback;
-  onOpen: (tab: SheetTab) => void;
+  onNote: () => void;
+  onScores: () => void;
 }) {
   const c = useBrand();
   const [tipOpen, setTipOpen] = useState(false);
@@ -36,7 +38,8 @@ export function BlockCard({
   const scored = Boolean(block.score_type);
   const canNote = scored || withFeedback;
   const noteDone = scored ? myScore !== undefined : Boolean(myFeedback);
-  const noteLabel = scored && myScore !== undefined ? showScore(block.score_type, myScore) : noteDone ? 'Noté' : 'Noter';
+  const noteLabel = noteDone ? 'Modifier' : 'Noter';
+  const tipTint = soft(c.accent);
 
   return (
     <View
@@ -48,30 +51,45 @@ export function BlockCard({
           borderLeftColor: accent,
         },
       ]}>
-      <View style={styles.head}>
+      <View style={[styles.head, block.premium && styles.headPremium]}>
         <Text style={[styles.title, { color: c.text }]}>{blockTitle(block)}</Text>
         {subtitle ? <Text style={[styles.sub, { color: c.muted }]}>{subtitle}</Text> : null}
-        {block.premium ? (
-          <View style={[styles.badge, { backgroundColor: c.accent }]}>
-            <Text style={[styles.badgeText, { color: c.onAccent }]}>Premium</Text>
-          </View>
-        ) : null}
       </View>
+      {block.premium ? (
+        <View style={styles.crown} accessibilityLabel="Premium">
+          <Text style={[styles.crownGlyph, { color: c.accent }]}>♛</Text>
+        </View>
+      ) : null}
       {body ? <Text style={[styles.body, { color: c.text }]}>{body}</Text> : null}
       {block.tip ? (
-        <Pressable onPress={() => setTipOpen((o) => !o)} style={styles.tipBtn}>
-          <Text style={[styles.tipLabel, { color: c.ink }]}>{tipOpen ? 'Masquer le tip' : 'Coach tip'}</Text>
-          {tipOpen ? <Text style={[styles.tipBody, { color: c.muted }]}>{block.tip}</Text> : null}
+        <Pressable
+          onPress={() => setTipOpen((o) => !o)}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: tipOpen }}
+          style={({ pressed }) => [
+            styles.tip,
+            { backgroundColor: tipTint, opacity: pressed ? 0.9 : 1 },
+          ]}>
+          <View style={styles.tipRow}>
+            <SymbolView name={symbol('lightbulb.fill', 'emoji_objects')} tintColor={c.ink} size={16} />
+            <Text style={[styles.tipLabel, { color: c.ink }]}>Coach tip</Text>
+            <SymbolView
+              name={symbol(tipOpen ? 'chevron.up' : 'chevron.down', tipOpen ? 'expand_less' : 'expand_more')}
+              tintColor={c.ink}
+              size={16}
+            />
+          </View>
+          {tipOpen ? <Text style={[styles.tipBody, { color: c.text }]}>{block.tip}</Text> : null}
         </Pressable>
       ) : null}
 
       {canNote ? (
         <View style={styles.actions}>
-          <Action label={noteLabel} done={noteDone} onPress={() => onOpen('note')} tint={accent} />
+          <Action label={noteLabel} done={noteDone} onPress={onNote} tint={accent} />
           {scored ? (
             <Action
               label={`${scoreCount || 0} score${(scoreCount || 0) > 1 ? 's' : ''}`}
-              onPress={() => onOpen('scores')}
+              onPress={onScores}
               tint={accent}
             />
           ) : null}
@@ -122,9 +140,24 @@ const styles = StyleSheet.create({
     borderLeftWidth: 5,
     padding: 16,
     gap: 10,
+    overflow: 'visible',
   },
   head: {
     gap: 2,
+  },
+  headPremium: {
+    paddingRight: 28,
+  },
+  crown: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    zIndex: 2,
+  },
+  crownGlyph: {
+    fontSize: 20,
+    lineHeight: 22,
+    fontWeight: '700',
   },
   title: {
     fontSize: 18,
@@ -134,31 +167,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  badge: {
-    alignSelf: 'flex-start',
-    marginTop: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
   body: {
     fontSize: 16,
     lineHeight: 24,
   },
-  tipBtn: {
-    gap: 6,
+  tip: {
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    gap: 8,
+  },
+  tipRow: {
+    minHeight: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   tipLabel: {
-    fontSize: 14,
-    fontWeight: '700',
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '800',
   },
   tipBody: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
+    paddingLeft: 24,
   },
   actions: {
     flexDirection: 'row',

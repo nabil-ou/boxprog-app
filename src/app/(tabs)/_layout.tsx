@@ -1,15 +1,13 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
 import { Pressable, View, type ColorValue } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
-import { symbol } from '@/lib/symbols';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
-function tabIcon(ios: string, android: string) {
-  const name = symbol(ios, android);
-  function TabIcon({ color }: { color: ColorValue }) {
-    return <SymbolView name={name} tintColor={color} size={26} />;
+function tabIcon(name: keyof typeof Ionicons.glyphMap) {
+  function TabIcon({ color, size }: { color: ColorValue; size: number }) {
+    return <Ionicons name={name} color={color} size={size ?? 24} />;
   }
   return TabIcon;
 }
@@ -47,11 +45,11 @@ export default function TabLayout() {
       }}>
       <Tabs.Screen
         name="index"
-        options={{ title: 'Aujourd’hui', headerShown: false, tabBarIcon: tabIcon('calendar', 'today') }}
+        options={{ title: 'WOD', headerShown: false, tabBarIcon: tabIcon('barbell') }}
       />
-      <Tabs.Screen name="actus" options={{ title: 'Actus', tabBarIcon: tabIcon('megaphone.fill', 'campaign') }} />
-      <Tabs.Screen name="chrono" options={{ title: 'Chrono', tabBarIcon: tabIcon('stopwatch.fill', 'timer') }} />
-      <Tabs.Screen name="records" options={{ title: 'PR', tabBarIcon: tabIcon('trophy.fill', 'emoji_events') }} />
+      <Tabs.Screen name="actus" options={{ title: 'Actus', tabBarIcon: tabIcon('megaphone') }} />
+      <Tabs.Screen name="chrono" options={{ title: 'Chrono', tabBarIcon: tabIcon('stopwatch') }} />
+      <Tabs.Screen name="records" options={{ title: 'PR', tabBarIcon: tabIcon('ribbon') }} />
     </Tabs>
   );
 }

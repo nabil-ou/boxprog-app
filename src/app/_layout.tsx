@@ -82,6 +82,16 @@ function RootStack() {
               headerTintColor: c.onPrimary,
             }}
           />
+          <Stack.Screen
+            name="scores/[blockId]"
+            options={{
+              headerShown: true,
+              title: 'Scores',
+              headerStyle: { backgroundColor: c.primary },
+              headerTintColor: c.onPrimary,
+              headerBackTitle: 'Retour',
+            }}
+          />
         </Stack.Protected>
       </Stack>
     </ThemeProvider>
