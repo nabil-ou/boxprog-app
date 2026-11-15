@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 
 import { ChipGroup } from '@/components/Chip';
 import { compareScores, showScore } from '@/lib/scoring';
-import { font, radius, space, tint, type as typeScale } from '@/lib/theme';
+import { BorderRadius, FontSize, FontWeight, Spacing, font, textStyles, tint } from '@/lib/theme';
 import type { Block, Level, ScoreRow } from '@/lib/types';
 import { useBrand } from '@/providers/BoxProvider';
 
@@ -22,16 +22,17 @@ export function Leaderboard({
   onBump: (r: ScoreRow) => void;
 }) {
   const c = useBrand();
+  const t = textStyles(c);
   const [sex, setSex] = useState<'all' | 'F' | 'H'>('all');
-  const t = block.score_type;
+  const scoreType = block.score_type;
   const list = useMemo(() => {
     const filtered = (rows || []).filter((r) => sex === 'all' || r.membership?.sex === sex);
-    const byScore = compareScores(t);
+    const byScore = compareScores(scoreType);
     return [...filtered].sort((a, b) => {
       const byLevel = LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level];
       return byLevel || byScore(a, b);
     });
-  }, [rows, sex, t]);
+  }, [rows, sex, scoreType]);
 
   const ranks = useMemo(() => {
     const map = new Map<string, number>();
@@ -55,11 +56,11 @@ export function Leaderboard({
         onChange={setSex}
       />
       {!rows ? (
-        <ActivityIndicator color={c.primary} style={{ marginTop: space[6] }} />
+        <ActivityIndicator color={c.primary} style={{ marginTop: Spacing.L }} />
       ) : !list.length ? (
-        <Text style={[styles.empty, { color: c.muted }]}>Aucun score pour l’instant. Sois le premier</Text>
+        <Text style={[t.body, styles.empty]}>Aucun score pour l’instant. Sois le premier</Text>
       ) : (
-        <View style={styles.list}>
+        <View style={[styles.list, { backgroundColor: c.surface, borderColor: c.border }]}>
           {list.map((r, i) => {
             const isMe = r.user_id === me;
             const bumped = r.bumps.some((x) => x.user_id === me);
@@ -71,7 +72,7 @@ export function Leaderboard({
                 style={[
                   styles.row,
                   i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.border },
-                  isMe && { backgroundColor: tint(c.primary, 0.92) },
+                  isMe && { backgroundColor: tint(c.primary, 0.94) },
                 ]}>
                 <Text
                   style={[
@@ -86,12 +87,12 @@ export function Leaderboard({
                 </Text>
                 <View style={styles.meta}>
                   <View style={styles.nameRow}>
-                    <Text style={[styles.name, { color: c.text, fontFamily: font.medium }]} numberOfLines={1}>
+                    <Text style={[styles.name, { color: c.text }]} numberOfLines={1}>
                       {name}
                       {isMe ? ' (toi)' : ''}
                     </Text>
                     <View style={[styles.tag, { backgroundColor: c.raised }]}>
-                      <Text style={[styles.tagText, { color: c.secondary, fontFamily: font.medium }]}>{r.level}</Text>
+                      <Text style={[styles.tagText, { color: c.muted }]}>{r.level}</Text>
                     </View>
                   </View>
                 </View>
@@ -100,16 +101,16 @@ export function Leaderboard({
                     styles.value,
                     { color: c.text, fontFamily: font.semibold, fontVariant: ['tabular-nums'] },
                   ]}>
-                  {showScore(t, r.value)}
+                  {showScore(scoreType, r.value)}
                 </Text>
                 {isMe ? (
                   <View style={styles.bumpBtn}>
-                    <Ionicons name="flame-outline" size={16} color={c.muted} />
+                    <Ionicons name="flame-outline" size={14} color={c.muted} />
                     <Text style={[styles.bumpCount, { color: c.muted }]}>{r.bumps.length}</Text>
                   </View>
                 ) : (
                   <Pressable onPress={() => onBump(r)} hitSlop={8} style={styles.bumpBtn}>
-                    <Ionicons name="flame-outline" size={16} color={bumped ? c.accent : c.muted} />
+                    <Ionicons name="flame-outline" size={14} color={bumped ? c.accent : c.muted} />
                     <Text style={[styles.bumpCount, { color: bumped ? c.accent : c.muted }]}>{r.bumps.length}</Text>
                   </Pressable>
                 )}
@@ -124,30 +125,29 @@ export function Leaderboard({
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: space[3],
+    gap: Spacing.S,
     flex: 1,
   },
   empty: {
-    marginTop: space[4],
+    marginTop: Spacing.M,
     textAlign: 'center',
-    fontSize: typeScale.md,
-    lineHeight: 22,
   },
   list: {
-    borderRadius: radius.md,
+    borderRadius: BorderRadius.L,
+    borderWidth: 1,
     overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space[2],
-    paddingVertical: space[3],
-    paddingHorizontal: space[3],
+    gap: Spacing.XS,
+    paddingVertical: Spacing.S,
+    paddingHorizontal: Spacing.S,
   },
   rank: {
     width: 28,
-    fontSize: typeScale.lg,
-    fontWeight: typeScale.weight.semibold,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.SEMI_BOLD,
     textAlign: 'center',
   },
   meta: {
@@ -157,36 +157,38 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space[2],
+    gap: Spacing.XS,
   },
   name: {
     flexShrink: 1,
-    fontSize: typeScale.md,
-    fontWeight: typeScale.weight.medium,
+    fontFamily: font.medium,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.MEDIUM,
   },
   tag: {
-    paddingHorizontal: 7,
+    paddingHorizontal: Spacing.XS,
     paddingVertical: 2,
-    borderRadius: 6,
+    borderRadius: BorderRadius.M,
   },
   tagText: {
-    fontSize: 11,
-    fontWeight: typeScale.weight.medium,
+    fontFamily: font.medium,
+    fontSize: FontSize.XXS + 1,
+    fontWeight: FontWeight.MEDIUM,
   },
   value: {
-    fontSize: typeScale.md,
-    fontWeight: typeScale.weight.semibold,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.SEMI_BOLD,
   },
   bumpBtn: {
-    minWidth: 40,
+    minWidth: 36,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
     gap: 4,
   },
   bumpCount: {
-    fontSize: typeScale.sm,
-    fontWeight: typeScale.weight.medium,
+    fontSize: FontSize.XS,
+    fontWeight: FontWeight.MEDIUM,
     fontVariant: ['tabular-nums'],
   },
 });

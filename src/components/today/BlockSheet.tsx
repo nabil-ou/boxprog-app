@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NoteForm } from '@/components/today/NoteForm';
 import { useBlockScores } from '@/hooks/useBlockScores';
 import { blockSubtitle, blockTitle } from '@/lib/scoring';
-import { font, kindColor, radius, space, type as typeScale } from '@/lib/theme';
+import { BorderRadius, Spacing, kindColor, softShadow, textStyles } from '@/lib/theme';
 import { feedbackOn, type Block, type Feedback, type Level } from '@/lib/types';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
@@ -24,6 +24,7 @@ export function BlockSheet({
 }) {
   const box = useActiveBox();
   const c = useBrand();
+  const t = textStyles(c);
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const { mine, load } = useBlockScores(block, box.id);
@@ -59,20 +60,22 @@ export function BlockSheet({
             sheetStyle,
             {
               backgroundColor: c.surface,
-              paddingBottom: Math.max(insets.bottom, space[4]),
+              paddingTop: Spacing.M,
+              paddingBottom: Math.max(insets.bottom, Spacing.M),
             },
           ]}>
-          <View style={styles.handleWrap}>
-            <View style={[styles.handle, { backgroundColor: c.border }]} />
-          </View>
           <View style={styles.head}>
-            <View style={{ flex: 1, gap: 4 }}>
-              <Text style={[styles.title, { color: c.text, fontFamily: font.semibold }]}>{blockTitle(block)}</Text>
+            <View style={{ flex: 1, gap: Spacing.XXS }}>
+              <Text style={t.titleSection}>{blockTitle(block)}</Text>
               <View style={[styles.kindMark, { backgroundColor: accent }]} />
-              {sub ? <Text style={[styles.sub, { color: c.muted }]}>{sub}</Text> : null}
+              {sub ? <Text style={t.bodySmall}>{sub}</Text> : null}
             </View>
-            <Pressable onPress={close} hitSlop={12} accessibilityLabel="Fermer" style={styles.closeBtn}>
-              <Ionicons name="close" size={22} color={c.muted} />
+            <Pressable
+              onPress={close}
+              hitSlop={12}
+              accessibilityLabel="Fermer"
+              style={[styles.closeBtn, softShadow, { backgroundColor: c.surface, borderColor: c.border }]}>
+              <Ionicons name="close" size={18} color={c.muted} />
             </Pressable>
           </View>
 
@@ -111,53 +114,40 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   sheet: {
     height: '85%',
-    borderTopLeftRadius: radius.sheet,
-    borderTopRightRadius: radius.sheet,
-    paddingHorizontal: space[4],
-    gap: space[3],
+    borderTopLeftRadius: BorderRadius.XL,
+    borderTopRightRadius: BorderRadius.XL,
+    paddingHorizontal: Spacing.M,
+    gap: Spacing.S,
     overflow: 'hidden',
-  },
-  handleWrap: {
-    alignItems: 'center',
-    paddingTop: space[2],
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
   },
   head: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: space[3],
-  },
-  title: {
-    fontSize: typeScale.xl,
-    fontWeight: typeScale.weight.semibold,
+    gap: Spacing.S,
   },
   kindMark: {
     width: 28,
     height: 2,
     borderRadius: 1,
   },
-  sub: {
-    fontSize: typeScale.sm,
-    fontWeight: typeScale.weight.regular,
-  },
   closeBtn: {
-    padding: space[1],
-    marginTop: 2,
+    width: 36,
+    height: 36,
+    borderRadius: BorderRadius.FULL,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scroll: {
     flex: 1,
   },
   body: {
-    paddingBottom: space[3],
-    gap: space[3],
+    paddingBottom: Spacing.S,
+    gap: Spacing.S,
     flexGrow: 1,
   },
 });

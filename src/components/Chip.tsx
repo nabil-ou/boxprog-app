@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { font, radius, space, type as typeScale } from '@/lib/theme';
+import { BorderRadius, FontSize, FontWeight, Spacing, font } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 
 export function ChipGroup<T extends string>({
@@ -26,12 +26,20 @@ export function ChipGroup<T extends string>({
             style={({ pressed }) => [
               styles.chip,
               {
-                backgroundColor: on ? c.primary : c.raised,
+                backgroundColor: c.surface,
+                borderColor: on ? c.text : c.border,
+                borderWidth: on ? 2 : 1,
                 opacity: pressed ? 0.85 : 1,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
               },
             ]}>
-            <Text style={[styles.label, { color: on ? c.onPrimary : c.secondary, fontFamily: on ? font.medium : font.regular }]}>
+            <Text
+              style={[
+                styles.label,
+                {
+                  color: c.text,
+                  fontFamily: on ? font.medium : font.regular,
+                },
+              ]}>
               {opt.label}
             </Text>
           </Pressable>
@@ -45,17 +53,17 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: space[2],
+    gap: Spacing.XS,
   },
   chip: {
-    paddingHorizontal: space[3],
-    paddingVertical: space[2],
-    borderRadius: radius.sm,
+    paddingHorizontal: Spacing.S,
+    paddingVertical: Spacing.XS,
+    borderRadius: BorderRadius.XL,
     minHeight: 36,
     justifyContent: 'center',
   },
   label: {
-    fontSize: typeScale.md,
-    fontWeight: typeScale.weight.medium,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.MEDIUM,
   },
 });

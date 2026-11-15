@@ -11,7 +11,7 @@ import { useScoreSummary } from '@/hooks/useScoreSummary';
 import { readStoredTrackId, storeTrackId, useTracks } from '@/hooks/useTracks';
 import { useWeek } from '@/hooks/useWeek';
 import { mondayOf, todayIso } from '@/lib/dates';
-import { space, type as typeScale } from '@/lib/theme';
+import { Spacing, textStyles } from '@/lib/theme';
 import { feedbackOn, type Block, type Track } from '@/lib/types';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
@@ -24,6 +24,7 @@ function resolveTrack(tracks: Track[] | null, selectedId: string | null, boxId: 
 export default function TodayScreen() {
   const box = useActiveBox();
   const c = useBrand();
+  const t = textStyles(c);
   const today = todayIso();
   const [day, setDay] = useState(today);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -73,9 +74,9 @@ export default function TodayScreen() {
         {!tracks || (loading && !week) ? (
           <ActivityIndicator color={c.primary} style={styles.spinner} />
         ) : error ? (
-          <Text style={[styles.empty, { color: c.danger }]}>{error}</Text>
+          <Text style={[t.body, styles.empty, { color: c.danger }]}>{error}</Text>
         ) : !blocks.length ? (
-          <Text style={[styles.empty, { color: c.muted }]}>Pas de programmation publiée pour ce jour.</Text>
+          <Text style={[t.body, styles.empty]}>Pas de programmation publiée pour ce jour.</Text>
         ) : (
           blocks.map((b) => (
             <BlockCard
@@ -120,18 +121,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   body: {
-    padding: space[4],
-    gap: space[3],
-    paddingBottom: space[8],
+    padding: Spacing.M,
+    gap: Spacing.S,
+    paddingBottom: Spacing.XL,
   },
   spinner: {
-    marginTop: 40,
+    marginTop: Spacing.XXL,
   },
   empty: {
-    marginTop: space[8],
+    marginTop: Spacing.XL,
     textAlign: 'center',
-    fontSize: typeScale.md,
-    lineHeight: 23,
-    paddingHorizontal: space[3],
+    paddingHorizontal: Spacing.S,
   },
 });

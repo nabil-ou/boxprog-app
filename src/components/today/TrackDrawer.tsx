@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { font, radius, space, tint, type as typeScale } from '@/lib/theme';
+import { BorderRadius, FontSize, FontWeight, Spacing, font, textStyles, tint } from '@/lib/theme';
 import type { Track } from '@/lib/types';
 import { useBrand } from '@/providers/BoxProvider';
 
@@ -20,6 +20,7 @@ export function TrackDrawer({
   onClose: () => void;
 }) {
   const c = useBrand();
+  const t = textStyles(c);
   const insets = useSafeAreaInsets();
 
   return (
@@ -31,33 +32,32 @@ export function TrackDrawer({
             styles.panel,
             {
               backgroundColor: c.surface,
-              paddingTop: insets.top + space[4],
-              paddingBottom: Math.max(insets.bottom, space[6]),
+              paddingTop: insets.top + Spacing.M,
+              paddingBottom: Math.max(insets.bottom, Spacing.L),
               borderRightColor: c.border,
             },
           ]}>
-          <Text style={[styles.heading, { color: c.text, fontFamily: font.semibold }]}>Programmations</Text>
-          <Text style={[styles.sub, { color: c.muted }]}>Choisis la piste à afficher</Text>
+          <Text style={t.titleSection}>Programmations</Text>
+          <Text style={[t.body, { marginBottom: Spacing.XS }]}>Choisis la piste à afficher</Text>
           <View style={styles.list}>
-            {tracks.map((t) => {
-              const active = t.id === selectedId;
+            {tracks.map((track) => {
+              const active = track.id === selectedId;
               return (
                 <Pressable
-                  key={t.id}
+                  key={track.id}
                   accessibilityRole="button"
                   accessibilityState={{ selected: active }}
-                  onPress={() => onSelect(t)}
+                  onPress={() => onSelect(track)}
                   style={({ pressed }) => [
                     styles.row,
                     {
                       backgroundColor: active ? tint(c.primary, 0.92) : pressed ? c.raised : 'transparent',
                       opacity: pressed ? 0.9 : 1,
-                      transform: [{ scale: pressed ? 0.98 : 1 }],
                     },
                   ]}>
-                  <View style={[styles.dot, { backgroundColor: t.color || c.accent }]} />
+                  <View style={[styles.dot, { backgroundColor: track.color || c.accent }]} />
                   <Text style={[styles.name, { color: c.text, fontFamily: active ? font.medium : font.regular }]}>
-                    {t.name}
+                    {track.name}
                   </Text>
                   {active ? <Ionicons name="checkmark" size={18} color={c.primary} /> : null}
                 </Pressable>
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   panel: {
     position: 'absolute',
@@ -86,28 +86,20 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '78%',
     maxWidth: 320,
-    paddingHorizontal: space[4],
-    gap: space[2],
-    borderRightWidth: StyleSheet.hairlineWidth,
-  },
-  heading: {
-    fontSize: typeScale.xl,
-    fontWeight: typeScale.weight.semibold,
-  },
-  sub: {
-    fontSize: typeScale.md,
-    marginBottom: space[2],
+    paddingHorizontal: Spacing.M,
+    gap: Spacing.XS,
+    borderRightWidth: 1,
   },
   list: {
-    gap: space[1],
+    gap: Spacing.XXS,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space[3],
-    paddingVertical: space[3],
-    paddingHorizontal: space[3],
-    borderRadius: radius.md,
+    gap: Spacing.S,
+    paddingVertical: Spacing.S,
+    paddingHorizontal: Spacing.S,
+    borderRadius: BorderRadius.M,
     minHeight: 48,
   },
   dot: {
@@ -117,7 +109,7 @@ const styles = StyleSheet.create({
   },
   name: {
     flex: 1,
-    fontSize: typeScale.lg,
-    fontWeight: typeScale.weight.regular,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.NORMAL,
   },
 });

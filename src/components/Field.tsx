@@ -1,15 +1,13 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 
-import { font, radius, space, type as typeScale } from '@/lib/theme';
+import { BorderRadius, FontSize, FontWeight, Height, Spacing, font } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 
 export interface FieldProps extends TextInputProps {
   label: string;
   hint?: string;
-  /** Message d'erreur affiché sous le champ, à la place de l'aide. */
   error?: string | null;
-  /** Bouton posé à droite dans le champ. */
   right?: ReactNode;
 }
 
@@ -17,7 +15,7 @@ export function Field({ label, hint, error, right, style, ...input }: FieldProps
   const c = useBrand();
   return (
     <View style={styles.wrap}>
-      <Text style={[styles.label, { color: c.secondary, fontFamily: font.medium }]}>{label}</Text>
+      <Text style={[styles.label, { color: c.text, fontFamily: font.medium }]}>{label}</Text>
       <View>
         <TextInput
           placeholderTextColor={c.muted}
@@ -26,7 +24,7 @@ export function Field({ label, hint, error, right, style, ...input }: FieldProps
             {
               borderColor: error ? c.danger : c.border,
               color: c.text,
-              backgroundColor: c.raised,
+              backgroundColor: c.surface,
               fontFamily: font.regular,
             },
             right ? styles.withRight : null,
@@ -47,18 +45,18 @@ export function Field({ label, hint, error, right, style, ...input }: FieldProps
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: space[2],
+    gap: Spacing.XS,
   },
   label: {
-    fontSize: typeScale.md,
-    fontWeight: typeScale.weight.medium,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.MEDIUM,
   },
   input: {
-    minHeight: 48,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
-    paddingHorizontal: space[3],
-    fontSize: typeScale.lg,
+    minHeight: Height.INPUT_S,
+    borderWidth: 1,
+    borderRadius: BorderRadius.M,
+    paddingHorizontal: Spacing.S,
+    fontSize: FontSize.S,
   },
   withRight: {
     paddingRight: 52,
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   hint: {
-    fontSize: typeScale.sm,
-    lineHeight: 18,
+    fontSize: FontSize.XS,
+    lineHeight: 16,
   },
 });

@@ -1,15 +1,14 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 
-import { font, radius, space, type as typeScale } from '@/lib/theme';
+import { BorderRadius, FontSize, FontWeight, Height, Spacing, font, softShadow } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 
 interface Props {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'ghost';
+  variant?: 'primary' | 'outline' | 'ghost';
   busy?: boolean;
   disabled?: boolean;
-  /** Bouton posé sur la couleur principale (écrans de connexion). */
   onBrand?: boolean;
   style?: StyleProp<ViewStyle>;
 }
@@ -17,8 +16,10 @@ interface Props {
 export function Button({ label, onPress, variant = 'primary', busy, disabled, onBrand, style }: Props) {
   const c = useBrand();
   const primary = variant === 'primary';
-  const bg = primary ? c.accent : 'transparent';
-  const fg = primary ? c.onAccent : onBrand ? c.onPrimary : c.ink;
+  const outline = variant === 'outline';
+  const bg = primary ? c.accent : outline ? c.surface : 'transparent';
+  const fg = primary ? c.onAccent : onBrand ? c.onPrimary : c.text;
+  const borderColor = primary ? c.accent : outline ? c.border : 'transparent';
 
   return (
     <Pressable
@@ -28,10 +29,11 @@ export function Button({ label, onPress, variant = 'primary', busy, disabled, on
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
+        primary && softShadow,
         {
           backgroundColor: bg,
+          borderColor,
           opacity: disabled ? 0.5 : pressed ? 0.85 : 1,
-          transform: [{ scale: pressed && !disabled ? 0.98 : 1 }],
         },
         style,
       ]}>
@@ -46,14 +48,16 @@ export function Button({ label, onPress, variant = 'primary', busy, disabled, on
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 48,
-    borderRadius: radius.md,
-    paddingHorizontal: space[5],
+    minHeight: Height.INPUT_S,
+    borderRadius: BorderRadius.M,
+    borderWidth: 1,
+    paddingHorizontal: Spacing.S,
+    paddingVertical: Spacing.S,
     alignItems: 'center',
     justifyContent: 'center',
   },
   label: {
-    fontSize: typeScale.lg,
-    fontWeight: typeScale.weight.medium,
+    fontSize: FontSize.M,
+    fontWeight: FontWeight.MEDIUM,
   },
 });

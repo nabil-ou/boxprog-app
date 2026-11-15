@@ -3,7 +3,7 @@ import { Link, Tabs } from 'expo-router';
 import { Pressable, StyleSheet, View, type ColorValue } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
-import { font, type as typeScale } from '@/lib/theme';
+import { FontSize, FontWeight, Spacing, font } from '@/lib/theme';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
 function tabIcon(name: keyof typeof Ionicons.glyphMap) {
@@ -16,7 +16,7 @@ function tabIcon(name: keyof typeof Ionicons.glyphMap) {
 function ProfileButton() {
   const box = useActiveBox();
   return (
-    <View style={{ marginHorizontal: 16 }}>
+    <View style={{ marginHorizontal: Spacing.M }}>
       <Link href="/profil" asChild>
         <Pressable accessibilityLabel="Mon profil" hitSlop={8}>
           <Avatar name={box.my_display_name} size={32} />
@@ -36,7 +36,11 @@ export default function TabLayout() {
         headerTitle: box.name,
         headerStyle: { backgroundColor: c.surface },
         headerTintColor: c.text,
-        headerTitleStyle: { fontFamily: font.semibold, fontWeight: typeScale.weight.semibold },
+        headerTitleStyle: {
+          fontFamily: font.semibold,
+          fontWeight: FontWeight.SEMI_BOLD,
+          fontSize: FontSize.L,
+        },
         headerShadowVisible: false,
         headerRight: () => <ProfileButton />,
         tabBarStyle: {
@@ -48,8 +52,8 @@ export default function TabLayout() {
         tabBarInactiveTintColor: c.muted,
         tabBarLabelStyle: {
           fontFamily: font.medium,
-          fontWeight: typeScale.weight.medium,
-          fontSize: 11,
+          fontWeight: FontWeight.MEDIUM,
+          fontSize: FontSize.XXS + 1,
         },
       }}>
       <Tabs.Screen

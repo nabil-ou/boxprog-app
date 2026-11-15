@@ -6,6 +6,7 @@
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo/vector-icons": "^15.0.3",
     "@supabase/supabase-js": "^2.119.0",
+    "babel-preset-expo": "~54.0.10",
     "expo": "~54.0.22",
     "expo-constants": "~18.0.14",
     "expo-dev-client": "~6.0.21",

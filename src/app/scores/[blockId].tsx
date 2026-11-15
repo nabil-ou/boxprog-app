@@ -6,7 +6,7 @@ import { Leaderboard } from '@/components/today/Leaderboard';
 import { useBlockScores } from '@/hooks/useBlockScores';
 import { blockSubtitle, blockTitle } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
-import { font, space, type as typeScale } from '@/lib/theme';
+import { FontSize, FontWeight, Spacing, font, textStyles } from '@/lib/theme';
 import type { Block } from '@/lib/types';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
@@ -14,6 +14,7 @@ export default function ScoresScreen() {
   const { blockId } = useLocalSearchParams<{ blockId: string }>();
   const box = useActiveBox();
   const c = useBrand();
+  const t = textStyles(c);
   const [block, setBlock] = useState<Block | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,14 +48,18 @@ export default function ScoresScreen() {
           title: block ? blockTitle(block) : 'Scores',
           headerStyle: { backgroundColor: c.surface },
           headerTintColor: c.text,
-          headerTitleStyle: { fontFamily: font.semibold, fontWeight: typeScale.weight.semibold },
+          headerTitleStyle: {
+            fontFamily: font.semibold,
+            fontWeight: FontWeight.SEMI_BOLD,
+            fontSize: FontSize.L,
+          },
           headerShadowVisible: false,
         }}
       />
       {!block && !error ? (
         <ActivityIndicator color={c.primary} style={styles.spinner} />
       ) : error || !block ? (
-        <Text style={[styles.empty, { color: c.danger }]}>{error || 'Bloc introuvable.'}</Text>
+        <Text style={[t.body, styles.empty, { color: c.danger }]}>{error || 'Bloc introuvable.'}</Text>
       ) : (
         <ScoresBody block={block} boxId={box.id} />
       )}
@@ -64,12 +69,13 @@ export default function ScoresScreen() {
 
 function ScoresBody({ block, boxId }: { block: Block; boxId: string }) {
   const c = useBrand();
+  const t = textStyles(c);
   const { rows, me, toggleBump } = useBlockScores(block, boxId);
   const sub = block.timer_format ? blockSubtitle(block) : '';
 
   return (
     <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-      {sub ? <Text style={[styles.sub, { color: c.muted }]}>{sub}</Text> : null}
+      {sub ? <Text style={t.bodySmall}>{sub}</Text> : null}
       <Leaderboard block={block} rows={rows} me={me} onBump={toggleBump} />
     </ScrollView>
   );
@@ -80,21 +86,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   spinner: {
-    marginTop: 40,
+    marginTop: Spacing.XXL,
   },
   empty: {
-    marginTop: space[8],
+    marginTop: Spacing.XL,
     textAlign: 'center',
-    fontSize: typeScale.md,
-    paddingHorizontal: space[4],
+    paddingHorizontal: Spacing.M,
   },
   body: {
-    padding: space[4],
-    gap: space[3],
-    paddingBottom: 40,
-  },
-  sub: {
-    fontSize: typeScale.sm,
-    fontWeight: typeScale.weight.regular,
+    padding: Spacing.M,
+    gap: Spacing.S,
+    paddingBottom: Spacing.XXL,
   },
 });

@@ -8,7 +8,7 @@ import { LevelChips } from '@/components/today/LevelChips';
 import { fmtDateTime } from '@/lib/dates';
 import { decodeScore, encodeScore } from '@/lib/scoring';
 import { errMsg, supabase } from '@/lib/supabase';
-import { font, radius, space, type as typeScale } from '@/lib/theme';
+import { BorderRadius, FontSize, FontWeight, Spacing, font } from '@/lib/theme';
 import { FEEDBACK_MAX, type Block, type Feedback, type Level, type ScoreRow } from '@/lib/types';
 import { useAuth } from '@/providers/AuthProvider';
 import { useBrand } from '@/providers/BoxProvider';
@@ -173,7 +173,7 @@ export function NoteForm({
               {
                 borderColor: c.border,
                 color: c.text,
-                backgroundColor: c.raised,
+                backgroundColor: c.surface,
                 fontFamily: font.regular,
               },
             ]}
@@ -195,40 +195,40 @@ export function NoteForm({
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: space[3],
+    gap: Spacing.S,
   },
   grid: {
     flexDirection: 'row',
-    gap: space[3],
+    gap: Spacing.S,
   },
   flex: {
     flex: 1,
   },
   eyebrow: {
-    fontSize: typeScale.sm,
-    fontWeight: typeScale.weight.medium,
+    fontSize: FontSize.XS,
+    fontWeight: FontWeight.MEDIUM,
   },
   feedback: {
-    gap: space[3],
+    gap: Spacing.S,
   },
   sep: {
     height: StyleSheet.hairlineWidth,
   },
   label: {
-    fontSize: typeScale.md,
-    fontWeight: typeScale.weight.medium,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.MEDIUM,
   },
   input: {
-    minHeight: 120,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.md,
-    paddingHorizontal: space[3],
-    paddingVertical: space[3],
-    fontSize: typeScale.md,
-    lineHeight: 22,
+    minHeight: 112,
+    borderWidth: 1,
+    borderRadius: BorderRadius.M,
+    paddingHorizontal: Spacing.S,
+    paddingVertical: Spacing.S,
+    fontSize: FontSize.S,
+    lineHeight: 20,
   },
   hint: {
-    fontSize: typeScale.sm,
-    lineHeight: 18,
+    fontSize: FontSize.XS,
+    lineHeight: 16,
   },
 });

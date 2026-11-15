@@ -1,11 +1,39 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, {
+  Easing,
+  interpolate,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
-import { blockSubtitle, blockTitle, levelText } from '@/lib/scoring';
-import { font, kindColor, radius, space, type as typeScale } from '@/lib/theme';
-import { feedbackOn, type Block, type BoxPublic, type Feedback, type KindColors, type Level } from '@/lib/types';
-import { useBrand } from '@/providers/BoxProvider';
+import { blockSubtitle, blockTitle, levelText } from "@/lib/scoring";
+import {
+  BorderRadius,
+  FontSize,
+  FontWeight,
+  Height,
+  Spacing,
+  font,
+  kindColor,
+  softShadow,
+  tint,
+} from "@/lib/theme";
+import {
+  feedbackOn,
+  type Block,
+  type BoxPublic,
+  type Feedback,
+  type KindColors,
+  type Level,
+} from "@/lib/types";
+import { useBrand } from "@/providers/BoxProvider";
+
+const EASE_OUT = Easing.bezier(0.23, 1, 0.32, 1);
+const TIP_MS = 220;
 
 export function BlockCard({
   block,
@@ -21,7 +49,7 @@ export function BlockCard({
   block: Block;
   level: Level;
   kindColors?: KindColors | null;
-  box: Pick<BoxPublic, 'feedback_kinds'>;
+  box: Pick<BoxPublic, "feedback_kinds">;
   myScore?: number;
   scoreCount?: number;
   myFeedback?: Feedback;
@@ -29,6 +57,7 @@ export function BlockCard({
   onScores: () => void;
 }) {
   const c = useBrand();
+  const reduced = useReducedMotion();
   const [tipOpen, setTipOpen] = useState(false);
   const subtitle = blockSubtitle(block);
   const body = levelText(block, level);
@@ -37,24 +66,73 @@ export function BlockCard({
   const scored = Boolean(block.score_type);
   const canNote = scored || withFeedback;
   const noteDone = scored ? myScore !== undefined : Boolean(myFeedback);
-  const noteLabel = noteDone ? 'Modifier' : 'Noter';
+  const noteLabel = noteDone ? "Modifier" : "Noter";
+
+  const tipProgress = useSharedValue(0);
+  const tipHeight = useSharedValue(0);
+
+  useEffect(() => {
+    setTipOpen(false);
+    tipProgress.value = 0;
+  }, [block.id, tipProgress]);
+
+  useEffect(() => {
+    tipProgress.value = reduced
+      ? tipOpen
+        ? 1
+        : 0
+      : withTiming(tipOpen ? 1 : 0, { duration: TIP_MS, easing: EASE_OUT });
+  }, [tipOpen, reduced, tipProgress]);
+
+  const tipBodyStyle = useAnimatedStyle(() => ({
+    height: tipProgress.value * tipHeight.value,
+    opacity: tipProgress.value,
+    transform: [
+      { translateY: interpolate(tipProgress.value, [0, 1], [-4, 0]) },
+    ],
+    overflow: "hidden" as const,
+  }));
+
+  const chevronStyle = useAnimatedStyle(() => ({
+    transform: [
+      { rotate: `${interpolate(tipProgress.value, [0, 1], [0, 180])}deg` },
+    ],
+  }));
+
+  const tipInk = c.primary;
+  const copy = "#3A3A39";
+  const tipWash = tint(c.primary, 0.92);
+  const tipBorder = tint(c.primary, 0.78);
+  const tipIconBg = tint(c.primary, 0.82);
+  const editFill = tint(c.accent, 0.88);
+  const editBorder = tint(c.accent, 0.55);
 
   return (
-    <View style={[styles.card, { backgroundColor: c.surface }]}>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: c.surface, borderColor: c.border },
+      ]}
+    >
       <View style={[styles.rail, { backgroundColor: kind }]} />
       <View style={styles.inner}>
         <View style={[styles.head, block.premium && styles.headPremium]}>
-          <Text style={[styles.title, { color: c.text, fontFamily: font.semibold }]}>{blockTitle(block)}</Text>
+          <Text style={[styles.title, { color: c.text }]}>
+            {blockTitle(block)}
+          </Text>
           {subtitle ? (
-            <Text style={[styles.sub, { color: c.muted, fontFamily: font.regular }]}>{subtitle}</Text>
+            <Text style={[styles.meta, { color: copy }]}>{subtitle}</Text>
           ) : null}
         </View>
         {block.premium ? (
           <View style={styles.crown} accessibilityLabel="Premium">
-            <Ionicons name="ribbon" size={16} color={c.accent} />
+            <Ionicons name="ribbon-outline" size={16} color={c.accent} />
           </View>
         ) : null}
-        {body ? <Text style={[styles.body, { color: c.text }]}>{body}</Text> : null}
+        {body ? (
+          <Text style={[styles.body, { color: copy }]}>{body}</Text>
+        ) : null}
+
         {block.tip ? (
           <Pressable
             onPress={() => setTipOpen((o) => !o)}
@@ -62,14 +140,42 @@ export function BlockCard({
             accessibilityState={{ expanded: tipOpen }}
             style={({ pressed }) => [
               styles.tip,
-              { backgroundColor: c.raised, opacity: pressed ? 0.9 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
-            ]}>
+              {
+                backgroundColor: tipWash,
+                borderColor: tipBorder,
+                transform: [{ scale: pressed ? 0.985 : 1 }],
+              },
+            ]}
+          >
             <View style={styles.tipRow}>
-              <Ionicons name="bulb-outline" size={16} color={c.secondary} />
-              <Text style={[styles.tipLabel, { color: c.secondary, fontFamily: font.medium }]}>Coach tip</Text>
-              <Ionicons name={tipOpen ? 'chevron-up' : 'chevron-down'} size={16} color={c.muted} />
+              <View style={[styles.tipIcon, { backgroundColor: tipIconBg }]}>
+                <Ionicons name="bulb" size={13} color={tipInk} />
+              </View>
+              <Text style={[styles.tipLabel, { color: copy }]}>
+                Coach tip
+              </Text>
+              <Animated.View style={chevronStyle}>
+                <Ionicons name="chevron-down" size={14} color={tipInk} />
+              </Animated.View>
             </View>
-            {tipOpen ? <Text style={[styles.tipBody, { color: c.text }]}>{block.tip}</Text> : null}
+            <View>
+              <View
+                style={styles.tipMeasure}
+                pointerEvents="none"
+                onLayout={(e) => {
+                  tipHeight.value = e.nativeEvent.layout.height;
+                }}
+              >
+                <Text style={[styles.tipBody, { color: copy }]}>
+                  {block.tip}
+                </Text>
+              </View>
+              <Animated.View style={tipBodyStyle}>
+                <Text style={[styles.tipBody, { color: copy }]}>
+                  {block.tip}
+                </Text>
+              </Animated.View>
+            </View>
           </Pressable>
         ) : null}
 
@@ -80,18 +186,31 @@ export function BlockCard({
               style={({ pressed }) => [
                 styles.action,
                 noteDone
-                  ? { backgroundColor: c.raised }
-                  : { backgroundColor: c.accent },
-                { opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
-              ]}>
+                  ? { backgroundColor: editFill, borderColor: editBorder }
+                  : [
+                      { backgroundColor: c.accent, borderColor: c.accent },
+                      softShadow,
+                    ],
+                {
+                  opacity: pressed ? 0.88 : 1,
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                },
+              ]}
+            >
+              <Ionicons
+                name={noteDone ? "create-outline" : "add-circle-outline"}
+                size={15}
+                color={noteDone ? c.accent : c.onAccent}
+              />
               <Text
                 style={[
                   styles.actionLabel,
                   {
-                    color: noteDone ? c.text : c.onAccent,
+                    color: noteDone ? c.accent : c.onAccent,
                     fontFamily: font.medium,
                   },
-                ]}>
+                ]}
+              >
                 {noteLabel}
               </Text>
             </Pressable>
@@ -100,12 +219,22 @@ export function BlockCard({
                 onPress={onScores}
                 style={({ pressed }) => [
                   styles.action,
-                  styles.actionSecondary,
-                  { backgroundColor: c.raised, opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
-                ]}>
-                <Ionicons name="people-outline" size={16} color={c.secondary} />
-                <Text style={[styles.actionLabel, { color: c.secondary, fontFamily: font.medium }]}>
-                  {scoreCount || 0} score{(scoreCount || 0) > 1 ? 's' : ''}
+                  {
+                    backgroundColor: c.raised,
+                    borderColor: c.border,
+                    opacity: pressed ? 0.88 : 1,
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                  },
+                ]}
+              >
+                <Ionicons name="people-outline" size={14} color={c.secondary} />
+                <Text
+                  style={[
+                    styles.actionLabel,
+                    { color: c.text, fontFamily: font.medium },
+                  ]}
+                >
+                  {scoreCount || 0} score{(scoreCount || 0) > 1 ? "s" : ""}
                 </Text>
               </Pressable>
             ) : null}
@@ -118,86 +247,112 @@ export function BlockCard({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-    flexDirection: 'row',
+    borderRadius: BorderRadius.L,
+    borderWidth: 1,
+    overflow: "hidden",
+    flexDirection: "row",
   },
   rail: {
     width: 3,
   },
   inner: {
     flex: 1,
-    padding: space[5],
-    gap: space[3],
+    paddingHorizontal: Spacing.M,
+    paddingVertical: Spacing.M,
+    gap: Spacing.S,
   },
   head: {
-    gap: 2,
+    gap: 4,
   },
   headPremium: {
     paddingRight: 24,
   },
-  crown: {
-    position: 'absolute',
-    top: space[5],
-    right: space[5],
-    zIndex: 2,
-  },
   title: {
-    fontSize: typeScale.lg,
-    fontWeight: typeScale.weight.semibold,
+    fontFamily: font.semibold,
+    fontSize: FontSize.L,
+    fontWeight: FontWeight.SEMI_BOLD,
+    lineHeight: 24,
+    letterSpacing: -0.4,
   },
-  sub: {
-    fontSize: typeScale.sm,
-    fontWeight: typeScale.weight.regular,
+  meta: {
+    fontFamily: font.regular,
+    fontSize: FontSize.XS,
+    fontWeight: FontWeight.NORMAL,
+    lineHeight: 16,
   },
   body: {
-    fontSize: typeScale.md,
-    lineHeight: 22,
-    fontWeight: typeScale.weight.regular,
+    fontFamily: font.semibold,
+    fontSize: FontSize.XS,
+    lineHeight: 18,
+  },
+  crown: {
+    position: "absolute",
+    top: Spacing.M,
+    right: Spacing.M,
+    zIndex: 2,
   },
   tip: {
-    borderRadius: radius.md,
-    paddingVertical: space[3],
-    paddingHorizontal: space[3],
-    gap: space[2],
+    borderRadius: BorderRadius.M,
+    borderWidth: 1,
+    paddingVertical: Spacing.S,
+    paddingHorizontal: Spacing.S,
   },
   tipRow: {
-    minHeight: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[2],
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.XS,
+  },
+  tipIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: BorderRadius.FULL,
+    alignItems: "center",
+    justifyContent: "center",
   },
   tipLabel: {
     flex: 1,
-    fontSize: typeScale.md,
-    fontWeight: typeScale.weight.medium,
+    fontFamily: font.medium,
+    fontSize: FontSize.XS,
+    fontWeight: FontWeight.MEDIUM,
+    lineHeight: 16,
+  },
+  tipMeasure: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    opacity: 0,
+    zIndex: -1,
   },
   tipBody: {
-    fontSize: typeScale.md,
-    lineHeight: 22,
-    paddingLeft: 24,
+    fontFamily: font.semibold,
+    fontSize: FontSize.XS,
+    fontWeight: FontWeight.SEMI_BOLD,
+    lineHeight: 18,
+    paddingLeft: 30,
+    paddingTop: Spacing.XS,
+    color: '#3A3A39',
   },
   actions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: space[2],
-    marginTop: space[1],
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.XS,
+    marginTop: Spacing.XXS,
   },
   action: {
     flexGrow: 1,
-    minWidth: '40%',
-    minHeight: 44,
-    paddingVertical: space[3],
-    paddingHorizontal: space[3],
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: space[2],
+    minWidth: "40%",
+    minHeight: Height.PRESSABLE_S,
+    paddingVertical: Spacing.S,
+    paddingHorizontal: Spacing.S,
+    borderRadius: BorderRadius.M,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: Spacing.XS,
   },
-  actionSecondary: {},
   actionLabel: {
-    fontSize: typeScale.md,
-    fontWeight: typeScale.weight.medium,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.MEDIUM,
   },
 });
