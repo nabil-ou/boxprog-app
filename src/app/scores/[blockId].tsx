@@ -6,6 +6,7 @@ import { Leaderboard } from '@/components/today/Leaderboard';
 import { useBlockScores } from '@/hooks/useBlockScores';
 import { blockSubtitle, blockTitle } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
+import { font, space, type as typeScale } from '@/lib/theme';
 import type { Block } from '@/lib/types';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
@@ -44,9 +45,10 @@ export default function ScoresScreen() {
       <Stack.Screen
         options={{
           title: block ? blockTitle(block) : 'Scores',
-          headerStyle: { backgroundColor: c.primary },
-          headerTintColor: c.onPrimary,
-          headerTitleStyle: { fontWeight: '700' },
+          headerStyle: { backgroundColor: c.surface },
+          headerTintColor: c.text,
+          headerTitleStyle: { fontFamily: font.semibold, fontWeight: typeScale.weight.semibold },
+          headerShadowVisible: false,
         }}
       />
       {!block && !error ? (
@@ -68,7 +70,6 @@ function ScoresBody({ block, boxId }: { block: Block; boxId: string }) {
   return (
     <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
       {sub ? <Text style={[styles.sub, { color: c.muted }]}>{sub}</Text> : null}
-      <Text style={[styles.heading, { color: c.text }]}>Leaderboard</Text>
       <Leaderboard block={block} rows={rows} me={me} onBump={toggleBump} />
     </ScrollView>
   );
@@ -82,22 +83,18 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   empty: {
-    marginTop: 32,
+    marginTop: space[8],
     textAlign: 'center',
-    fontSize: 16,
-    paddingHorizontal: 16,
+    fontSize: typeScale.md,
+    paddingHorizontal: space[4],
   },
   body: {
-    padding: 16,
-    gap: 12,
+    padding: space[4],
+    gap: space[3],
     paddingBottom: 40,
   },
   sub: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  heading: {
-    fontSize: 22,
-    fontWeight: '800',
+    fontSize: typeScale.sm,
+    fontWeight: typeScale.weight.regular,
   },
 });

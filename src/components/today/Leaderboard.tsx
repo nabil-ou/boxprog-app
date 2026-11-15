@@ -1,7 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { ChipGroup } from '@/components/Chip';
 import { compareScores, showScore } from '@/lib/scoring';
+import { font, radius, space, tint, type as typeScale } from '@/lib/theme';
 import type { Block, Level, ScoreRow } from '@/lib/types';
 import { useBrand } from '@/providers/BoxProvider';
 
@@ -42,33 +45,22 @@ export function Leaderboard({
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.filters}>
-        {([
-          ['all', 'Tous'],
-          ['F', 'Femmes'],
-          ['H', 'Hommes'],
-        ] as const).map(([k, label]) => {
-          const on = sex === k;
-          return (
-            <Pressable
-              key={k}
-              onPress={() => setSex(k)}
-              style={[
-                styles.chip,
-                { backgroundColor: on ? c.primary : c.background, borderColor: on ? c.primary : c.border },
-              ]}>
-              <Text style={{ color: on ? c.onPrimary : c.text, fontWeight: '700', fontSize: 14 }}>{label}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
+      <ChipGroup
+        options={[
+          { value: 'all' as const, label: 'Tous' },
+          { value: 'F' as const, label: 'Femmes' },
+          { value: 'H' as const, label: 'Hommes' },
+        ]}
+        value={sex}
+        onChange={setSex}
+      />
       {!rows ? (
-        <ActivityIndicator color={c.primary} style={{ marginTop: 24 }} />
+        <ActivityIndicator color={c.primary} style={{ marginTop: space[6] }} />
       ) : !list.length ? (
-        <Text style={[styles.empty, { color: c.muted }]}>Aucun score pour l’instant. Sois le premier !</Text>
+        <Text style={[styles.empty, { color: c.muted }]}>Aucun score pour l’instant. Sois le premier</Text>
       ) : (
         <View style={styles.list}>
-          {list.map((r) => {
+          {list.map((r, i) => {
             const isMe = r.user_id === me;
             const bumped = r.bumps.some((x) => x.user_id === me);
             const name = r.membership?.display_name || 'Adhérent';
@@ -78,26 +70,47 @@ export function Leaderboard({
                 key={r.id}
                 style={[
                   styles.row,
-                  { backgroundColor: isMe ? mixSoft(c.primary) : c.surface, borderColor: c.border },
+                  i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.border },
+                  isMe && { backgroundColor: tint(c.primary, 0.92) },
                 ]}>
-                <Text style={[styles.rank, { color: rank === 1 ? c.accent : c.muted }]}>{rank}</Text>
+                <Text
+                  style={[
+                    styles.rank,
+                    {
+                      color: rank === 1 ? c.accent : c.muted,
+                      fontFamily: font.semibold,
+                      fontVariant: ['tabular-nums'],
+                    },
+                  ]}>
+                  {rank}
+                </Text>
                 <View style={styles.meta}>
                   <View style={styles.nameRow}>
-                    <Text style={[styles.name, { color: c.text }]} numberOfLines={1}>
+                    <Text style={[styles.name, { color: c.text, fontFamily: font.medium }]} numberOfLines={1}>
                       {name}
                       {isMe ? ' (toi)' : ''}
                     </Text>
-                    <View style={[styles.tag, { backgroundColor: soft(c.accent) }]}>
-                      <Text style={[styles.tagText, { color: c.ink }]}>{r.level}</Text>
+                    <View style={[styles.tag, { backgroundColor: c.raised }]}>
+                      <Text style={[styles.tagText, { color: c.secondary, fontFamily: font.medium }]}>{r.level}</Text>
                     </View>
                   </View>
                 </View>
-                <Text style={[styles.value, { color: c.text }]}>{showScore(t, r.value)}</Text>
+                <Text
+                  style={[
+                    styles.value,
+                    { color: c.text, fontFamily: font.semibold, fontVariant: ['tabular-nums'] },
+                  ]}>
+                  {showScore(t, r.value)}
+                </Text>
                 {isMe ? (
-                  <Text style={[styles.bump, { color: c.muted }]}>🔥 {r.bumps.length}</Text>
+                  <View style={styles.bumpBtn}>
+                    <Ionicons name="flame-outline" size={16} color={c.muted} />
+                    <Text style={[styles.bumpCount, { color: c.muted }]}>{r.bumps.length}</Text>
+                  </View>
                 ) : (
                   <Pressable onPress={() => onBump(r)} hitSlop={8} style={styles.bumpBtn}>
-                    <Text style={{ color: bumped ? c.accent : c.muted, fontWeight: '700' }}>🔥 {r.bumps.length}</Text>
+                    <Ionicons name="flame-outline" size={16} color={bumped ? c.accent : c.muted} />
+                    <Text style={[styles.bumpCount, { color: bumped ? c.accent : c.muted }]}>{r.bumps.length}</Text>
                   </Pressable>
                 )}
               </View>
@@ -109,60 +122,32 @@ export function Leaderboard({
   );
 }
 
-function soft(hex: string) {
-  const h = hex.replace('#', '');
-  if (h.length !== 6) return '#F3F4F6';
-  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
-  const mix = (v: number) => Math.round(v * 0.16 + 255 * 0.84);
-  return `#${[r, g, b].map((v) => mix(v).toString(16).padStart(2, '0')).join('')}`;
-}
-
-function mixSoft(hex: string) {
-  const h = hex.replace('#', '');
-  if (h.length !== 6) return '#F3F4F6';
-  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
-  const mix = (v: number) => Math.round(v * 0.1 + 255 * 0.9);
-  return `#${[r, g, b].map((v) => mix(v).toString(16).padStart(2, '0')).join('')}`;
-}
-
 const styles = StyleSheet.create({
   wrap: {
-    gap: 12,
+    gap: space[3],
     flex: 1,
   },
-  filters: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 999,
-    borderWidth: 1,
-  },
   empty: {
-    marginTop: 16,
+    marginTop: space[4],
     textAlign: 'center',
-    fontSize: 15,
+    fontSize: typeScale.md,
     lineHeight: 22,
   },
   list: {
-    gap: 8,
+    borderRadius: radius.md,
+    overflow: 'hidden',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
+    gap: space[2],
+    paddingVertical: space[3],
+    paddingHorizontal: space[3],
   },
   rank: {
     width: 28,
-    fontSize: 17,
-    fontWeight: '800',
+    fontSize: typeScale.lg,
+    fontWeight: typeScale.weight.semibold,
     textAlign: 'center',
   },
   meta: {
@@ -172,12 +157,12 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: space[2],
   },
   name: {
     flexShrink: 1,
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: typeScale.md,
+    fontWeight: typeScale.weight.medium,
   },
   tag: {
     paddingHorizontal: 7,
@@ -186,20 +171,22 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: typeScale.weight.medium,
   },
   value: {
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  bump: {
-    fontSize: 14,
-    fontWeight: '700',
-    minWidth: 40,
-    textAlign: 'right',
+    fontSize: typeScale.md,
+    fontWeight: typeScale.weight.semibold,
   },
   bumpBtn: {
     minWidth: 40,
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 4,
+  },
+  bumpCount: {
+    fontSize: typeScale.sm,
+    fontWeight: typeScale.weight.medium,
+    fontVariant: ['tabular-nums'],
   },
 });

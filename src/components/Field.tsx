@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 
+import { font, radius, space, type as typeScale } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 
 export interface FieldProps extends TextInputProps {
@@ -16,13 +17,18 @@ export function Field({ label, hint, error, right, style, ...input }: FieldProps
   const c = useBrand();
   return (
     <View style={styles.wrap}>
-      <Text style={[styles.label, { color: c.text }]}>{label}</Text>
+      <Text style={[styles.label, { color: c.secondary, fontFamily: font.medium }]}>{label}</Text>
       <View>
         <TextInput
           placeholderTextColor={c.muted}
           style={[
             styles.input,
-            { borderColor: error ? c.danger : c.border, color: c.text, backgroundColor: c.surface },
+            {
+              borderColor: error ? c.danger : c.border,
+              color: c.text,
+              backgroundColor: c.raised,
+              fontFamily: font.regular,
+            },
             right ? styles.withRight : null,
             style,
           ]}
@@ -41,18 +47,18 @@ export function Field({ label, hint, error, right, style, ...input }: FieldProps
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: 6,
+    gap: space[2],
   },
   label: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: typeScale.md,
+    fontWeight: typeScale.weight.medium,
   },
   input: {
-    minHeight: 50,
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    fontSize: 17,
+    minHeight: 48,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radius.md,
+    paddingHorizontal: space[3],
+    fontSize: typeScale.lg,
   },
   withRight: {
     paddingRight: 52,
@@ -65,7 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   hint: {
-    fontSize: 13,
+    fontSize: typeScale.sm,
     lineHeight: 18,
   },
 });

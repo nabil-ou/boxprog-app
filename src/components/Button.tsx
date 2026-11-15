@@ -1,5 +1,6 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 
+import { font, radius, space, type as typeScale } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 
 interface Props {
@@ -27,24 +28,32 @@ export function Button({ label, onPress, variant = 'primary', busy, disabled, on
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
-        { backgroundColor: bg, opacity: disabled ? 0.5 : pressed ? 0.8 : 1 },
+        {
+          backgroundColor: bg,
+          opacity: disabled ? 0.5 : pressed ? 0.85 : 1,
+          transform: [{ scale: pressed && !disabled ? 0.98 : 1 }],
+        },
         style,
       ]}>
-      {busy ? <ActivityIndicator color={fg} /> : <Text style={[styles.label, { color: fg }]}>{label}</Text>}
+      {busy ? (
+        <ActivityIndicator color={fg} />
+      ) : (
+        <Text style={[styles.label, { color: fg, fontFamily: font.medium }]}>{label}</Text>
+      )}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 52,
-    borderRadius: 14,
-    paddingHorizontal: 20,
+    minHeight: 48,
+    borderRadius: radius.md,
+    paddingHorizontal: space[5],
     alignItems: 'center',
     justifyContent: 'center',
   },
   label: {
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: typeScale.lg,
+    fontWeight: typeScale.weight.medium,
   },
 });

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NoteForm } from '@/components/today/NoteForm';
 import { useBlockScores } from '@/hooks/useBlockScores';
 import { blockSubtitle, blockTitle } from '@/lib/scoring';
-import { kindColor } from '@/lib/theme';
+import { font, kindColor, radius, space, type as typeScale } from '@/lib/theme';
 import { feedbackOn, type Block, type Feedback, type Level } from '@/lib/types';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
@@ -25,7 +26,6 @@ export function BlockSheet({
   const c = useBrand();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
-  const [fb, setFb] = useState(myFeedback);
   const { mine, load } = useBlockScores(block, box.id);
   const withFeedback = feedbackOn(block, box);
   const accent = kindColor(block.kind, box.kind_colors);
@@ -59,20 +59,20 @@ export function BlockSheet({
             sheetStyle,
             {
               backgroundColor: c.surface,
-              borderTopColor: accent,
-              paddingBottom: Math.max(insets.bottom, 16),
+              paddingBottom: Math.max(insets.bottom, space[4]),
             },
           ]}>
           <View style={styles.handleWrap}>
             <View style={[styles.handle, { backgroundColor: c.border }]} />
           </View>
           <View style={styles.head}>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.title, { color: c.text }]}>{blockTitle(block)}</Text>
+            <View style={{ flex: 1, gap: 4 }}>
+              <Text style={[styles.title, { color: c.text, fontFamily: font.semibold }]}>{blockTitle(block)}</Text>
+              <View style={[styles.kindMark, { backgroundColor: accent }]} />
               {sub ? <Text style={[styles.sub, { color: c.muted }]}>{sub}</Text> : null}
             </View>
-            <Pressable onPress={close} hitSlop={12}>
-              <Text style={[styles.close, { color: c.ink }]}>Fermer</Text>
+            <Pressable onPress={close} hitSlop={12} accessibilityLabel="Fermer" style={styles.closeBtn}>
+              <Ionicons name="close" size={22} color={c.muted} />
             </Pressable>
           </View>
 
@@ -86,7 +86,7 @@ export function BlockSheet({
             <NoteForm
               block={block}
               mineScore={mine}
-              mineFeedback={fb}
+              mineFeedback={myFeedback}
               initialLevel={memberLevel}
               withFeedback={withFeedback}
               onSaved={() => {
@@ -115,16 +115,15 @@ const styles = StyleSheet.create({
   },
   sheet: {
     height: '85%',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderTopWidth: 4,
-    paddingHorizontal: 16,
-    gap: 12,
+    borderTopLeftRadius: radius.sheet,
+    borderTopRightRadius: radius.sheet,
+    paddingHorizontal: space[4],
+    gap: space[3],
     overflow: 'hidden',
   },
   handleWrap: {
     alignItems: 'center',
-    paddingTop: 10,
+    paddingTop: space[2],
   },
   handle: {
     width: 40,
@@ -134,28 +133,31 @@ const styles = StyleSheet.create({
   head: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
+    gap: space[3],
   },
   title: {
-    fontSize: 22,
-    fontWeight: '800',
+    fontSize: typeScale.xl,
+    fontWeight: typeScale.weight.semibold,
+  },
+  kindMark: {
+    width: 28,
+    height: 2,
+    borderRadius: 1,
   },
   sub: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 2,
+    fontSize: typeScale.sm,
+    fontWeight: typeScale.weight.regular,
   },
-  close: {
-    fontSize: 15,
-    fontWeight: '700',
-    marginTop: 4,
+  closeBtn: {
+    padding: space[1],
+    marginTop: 2,
   },
   scroll: {
     flex: 1,
   },
   body: {
-    paddingBottom: 12,
-    gap: 12,
+    paddingBottom: space[3],
+    gap: space[3],
     flexGrow: 1,
   },
 });

@@ -1,13 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
-import { Pressable, View, type ColorValue } from 'react-native';
+import { Pressable, StyleSheet, View, type ColorValue } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
+import { font, type as typeScale } from '@/lib/theme';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
 function tabIcon(name: keyof typeof Ionicons.glyphMap) {
   function TabIcon({ color, size }: { color: ColorValue; size: number }) {
-    return <Ionicons name={name} color={color} size={size ?? 24} />;
+    return <Ionicons name={name} color={color} size={size ?? 22} />;
   }
   return TabIcon;
 }
@@ -33,23 +34,31 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerTitle: box.name,
-        headerStyle: { backgroundColor: c.primary },
-        headerTintColor: c.onPrimary,
-        headerTitleStyle: { fontWeight: '800' },
+        headerStyle: { backgroundColor: c.surface },
+        headerTintColor: c.text,
+        headerTitleStyle: { fontFamily: font.semibold, fontWeight: typeScale.weight.semibold },
         headerShadowVisible: false,
         headerRight: () => <ProfileButton />,
-        tabBarStyle: { backgroundColor: c.primary, borderTopColor: c.primary },
+        tabBarStyle: {
+          backgroundColor: c.surface,
+          borderTopColor: c.border,
+          borderTopWidth: StyleSheet.hairlineWidth,
+        },
         tabBarActiveTintColor: c.accent,
-        tabBarInactiveTintColor: c.onPrimaryMuted,
-        tabBarLabelStyle: { fontWeight: '600' },
+        tabBarInactiveTintColor: c.muted,
+        tabBarLabelStyle: {
+          fontFamily: font.medium,
+          fontWeight: typeScale.weight.medium,
+          fontSize: 11,
+        },
       }}>
       <Tabs.Screen
         name="index"
-        options={{ title: 'WOD', headerShown: false, tabBarIcon: tabIcon('barbell') }}
+        options={{ title: 'WOD', headerShown: false, tabBarIcon: tabIcon('barbell-outline') }}
       />
-      <Tabs.Screen name="actus" options={{ title: 'Actus', tabBarIcon: tabIcon('megaphone') }} />
-      <Tabs.Screen name="chrono" options={{ title: 'Chrono', tabBarIcon: tabIcon('stopwatch') }} />
-      <Tabs.Screen name="records" options={{ title: 'PR', tabBarIcon: tabIcon('ribbon') }} />
+      <Tabs.Screen name="actus" options={{ title: 'Actus', tabBarIcon: tabIcon('megaphone-outline') }} />
+      <Tabs.Screen name="chrono" options={{ title: 'Chrono', tabBarIcon: tabIcon('stopwatch-outline') }} />
+      <Tabs.Screen name="records" options={{ title: 'PR', tabBarIcon: tabIcon('ribbon-outline') }} />
     </Tabs>
   );
 }

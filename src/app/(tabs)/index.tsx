@@ -10,7 +10,8 @@ import { useFeedbacks } from '@/hooks/useFeedbacks';
 import { useScoreSummary } from '@/hooks/useScoreSummary';
 import { readStoredTrackId, storeTrackId, useTracks } from '@/hooks/useTracks';
 import { useWeek } from '@/hooks/useWeek';
-import { fullWeek, mondayOf, todayIso } from '@/lib/dates';
+import { mondayOf, todayIso } from '@/lib/dates';
+import { space, type as typeScale } from '@/lib/theme';
 import { feedbackOn, type Block, type Track } from '@/lib/types';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
@@ -30,7 +31,6 @@ export default function TodayScreen() {
   const [sheetBlock, setSheetBlock] = useState<Block | null>(null);
 
   const monday = mondayOf(day);
-  const weekDays = useMemo(() => fullWeek(monday), [monday]);
   const { tracks } = useTracks(box.id);
   const track = resolveTrack(tracks, selectedTrackId, box.id);
   const trackId = track?.id ?? null;
@@ -63,7 +63,6 @@ export default function TodayScreen() {
     <View style={[styles.root, { backgroundColor: c.background }]}>
       <TodayHeader
         trackName={track?.name || 'Programmation'}
-        days={weekDays}
         day={day}
         today={today}
         onDayChange={setDay}
@@ -121,18 +120,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   body: {
-    padding: 16,
-    gap: 12,
-    paddingBottom: 32,
+    padding: space[4],
+    gap: space[3],
+    paddingBottom: space[8],
   },
   spinner: {
     marginTop: 40,
   },
   empty: {
-    marginTop: 32,
+    marginTop: space[8],
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: typeScale.md,
     lineHeight: 23,
-    paddingHorizontal: 12,
+    paddingHorizontal: space[3],
   },
 });

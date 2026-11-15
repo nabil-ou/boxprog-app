@@ -8,6 +8,7 @@ import { LevelChips } from '@/components/today/LevelChips';
 import { fmtDateTime } from '@/lib/dates';
 import { decodeScore, encodeScore } from '@/lib/scoring';
 import { errMsg, supabase } from '@/lib/supabase';
+import { font, radius, space, type as typeScale } from '@/lib/theme';
 import { FEEDBACK_MAX, type Block, type Feedback, type Level, type ScoreRow } from '@/lib/types';
 import { useAuth } from '@/providers/AuthProvider';
 import { useBrand } from '@/providers/BoxProvider';
@@ -151,7 +152,7 @@ export function NoteForm({
               </View>
             ) : null}
           </View>
-          <Text style={[styles.eyebrow, { color: c.muted }]}>Niveau</Text>
+          <Text style={[styles.eyebrow, { color: c.muted, fontFamily: font.medium }]}>Niveau</Text>
           <LevelChips value={level} onChange={setLevel} />
         </>
       ) : null}
@@ -159,7 +160,7 @@ export function NoteForm({
       {withFeedback ? (
         <View style={styles.feedback}>
           {scored ? <View style={[styles.sep, { backgroundColor: c.border }]} /> : null}
-          <Text style={[styles.label, { color: c.text }]}>Mon retour</Text>
+          <Text style={[styles.label, { color: c.secondary, fontFamily: font.medium }]}>Mon retour</Text>
           <TextInput
             value={body}
             onChangeText={setBody}
@@ -167,7 +168,15 @@ export function NoteForm({
             maxLength={FEEDBACK_MAX}
             placeholder="Sensations, charge utilisée, douleur, difficulté…"
             placeholderTextColor={c.muted}
-            style={[styles.input, { borderColor: c.border, color: c.text, backgroundColor: c.background }]}
+            style={[
+              styles.input,
+              {
+                borderColor: c.border,
+                color: c.text,
+                backgroundColor: c.raised,
+                fontFamily: font.regular,
+              },
+            ]}
             textAlignVertical="top"
           />
           <Text style={[styles.hint, { color: c.muted }]}>
@@ -186,43 +195,40 @@ export function NoteForm({
 
 const styles = StyleSheet.create({
   wrap: {
-    gap: 12,
+    gap: space[3],
   },
   grid: {
     flexDirection: 'row',
-    gap: 12,
+    gap: space[3],
   },
   flex: {
     flex: 1,
   },
   eyebrow: {
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
+    fontSize: typeScale.sm,
+    fontWeight: typeScale.weight.medium,
   },
   feedback: {
-    gap: 12,
+    gap: space[3],
   },
   sep: {
     height: StyleSheet.hairlineWidth,
-    marginBottom: 4,
   },
   label: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: typeScale.md,
+    fontWeight: typeScale.weight.medium,
   },
   input: {
     minHeight: 120,
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: radius.md,
+    paddingHorizontal: space[3],
+    paddingVertical: space[3],
+    fontSize: typeScale.md,
     lineHeight: 22,
   },
   hint: {
-    fontSize: 13,
+    fontSize: typeScale.sm,
     lineHeight: 18,
   },
 });

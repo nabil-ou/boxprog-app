@@ -1,10 +1,9 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { SymbolView } from 'expo-symbols';
 
 import { blockSubtitle, blockTitle, levelText } from '@/lib/scoring';
-import { symbol } from '@/lib/symbols';
-import { kindColor } from '@/lib/theme';
+import { font, kindColor, radius, space, type as typeScale } from '@/lib/theme';
 import { feedbackOn, type Block, type BoxPublic, type Feedback, type KindColors, type Level } from '@/lib/types';
 import { useBrand } from '@/providers/BoxProvider';
 
@@ -33,182 +32,172 @@ export function BlockCard({
   const [tipOpen, setTipOpen] = useState(false);
   const subtitle = blockSubtitle(block);
   const body = levelText(block, level);
-  const accent = kindColor(block.kind, kindColors);
+  const kind = kindColor(block.kind, kindColors);
   const withFeedback = feedbackOn(block, box);
   const scored = Boolean(block.score_type);
   const canNote = scored || withFeedback;
   const noteDone = scored ? myScore !== undefined : Boolean(myFeedback);
   const noteLabel = noteDone ? 'Modifier' : 'Noter';
-  const tipTint = soft(c.accent);
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: c.surface,
-          borderColor: c.border,
-          borderLeftColor: accent,
-        },
-      ]}>
-      <View style={[styles.head, block.premium && styles.headPremium]}>
-        <Text style={[styles.title, { color: c.text }]}>{blockTitle(block)}</Text>
-        {subtitle ? <Text style={[styles.sub, { color: c.muted }]}>{subtitle}</Text> : null}
-      </View>
-      {block.premium ? (
-        <View style={styles.crown} accessibilityLabel="Premium">
-          <Text style={[styles.crownGlyph, { color: c.accent }]}>♛</Text>
-        </View>
-      ) : null}
-      {body ? <Text style={[styles.body, { color: c.text }]}>{body}</Text> : null}
-      {block.tip ? (
-        <Pressable
-          onPress={() => setTipOpen((o) => !o)}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: tipOpen }}
-          style={({ pressed }) => [
-            styles.tip,
-            { backgroundColor: tipTint, opacity: pressed ? 0.9 : 1 },
-          ]}>
-          <View style={styles.tipRow}>
-            <SymbolView name={symbol('lightbulb.fill', 'emoji_objects')} tintColor={c.ink} size={16} />
-            <Text style={[styles.tipLabel, { color: c.ink }]}>Coach tip</Text>
-            <SymbolView
-              name={symbol(tipOpen ? 'chevron.up' : 'chevron.down', tipOpen ? 'expand_less' : 'expand_more')}
-              tintColor={c.ink}
-              size={16}
-            />
-          </View>
-          {tipOpen ? <Text style={[styles.tipBody, { color: c.text }]}>{block.tip}</Text> : null}
-        </Pressable>
-      ) : null}
-
-      {canNote ? (
-        <View style={styles.actions}>
-          <Action label={noteLabel} done={noteDone} onPress={onNote} tint={accent} />
-          {scored ? (
-            <Action
-              label={`${scoreCount || 0} score${(scoreCount || 0) > 1 ? 's' : ''}`}
-              onPress={onScores}
-              tint={accent}
-            />
+    <View style={[styles.card, { backgroundColor: c.surface }]}>
+      <View style={[styles.rail, { backgroundColor: kind }]} />
+      <View style={styles.inner}>
+        <View style={[styles.head, block.premium && styles.headPremium]}>
+          <Text style={[styles.title, { color: c.text, fontFamily: font.semibold }]}>{blockTitle(block)}</Text>
+          {subtitle ? (
+            <Text style={[styles.sub, { color: c.muted, fontFamily: font.regular }]}>{subtitle}</Text>
           ) : null}
         </View>
-      ) : null}
+        {block.premium ? (
+          <View style={styles.crown} accessibilityLabel="Premium">
+            <Ionicons name="ribbon" size={16} color={c.accent} />
+          </View>
+        ) : null}
+        {body ? <Text style={[styles.body, { color: c.text }]}>{body}</Text> : null}
+        {block.tip ? (
+          <Pressable
+            onPress={() => setTipOpen((o) => !o)}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: tipOpen }}
+            style={({ pressed }) => [
+              styles.tip,
+              { backgroundColor: c.raised, opacity: pressed ? 0.9 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
+            ]}>
+            <View style={styles.tipRow}>
+              <Ionicons name="bulb-outline" size={16} color={c.secondary} />
+              <Text style={[styles.tipLabel, { color: c.secondary, fontFamily: font.medium }]}>Coach tip</Text>
+              <Ionicons name={tipOpen ? 'chevron-up' : 'chevron-down'} size={16} color={c.muted} />
+            </View>
+            {tipOpen ? <Text style={[styles.tipBody, { color: c.text }]}>{block.tip}</Text> : null}
+          </Pressable>
+        ) : null}
+
+        {canNote ? (
+          <View style={styles.actions}>
+            <Pressable
+              onPress={onNote}
+              style={({ pressed }) => [
+                styles.action,
+                noteDone
+                  ? { backgroundColor: c.raised }
+                  : { backgroundColor: c.accent },
+                { opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
+              ]}>
+              <Text
+                style={[
+                  styles.actionLabel,
+                  {
+                    color: noteDone ? c.text : c.onAccent,
+                    fontFamily: font.medium,
+                  },
+                ]}>
+                {noteLabel}
+              </Text>
+            </Pressable>
+            {scored ? (
+              <Pressable
+                onPress={onScores}
+                style={({ pressed }) => [
+                  styles.action,
+                  styles.actionSecondary,
+                  { backgroundColor: c.raised, opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
+                ]}>
+                <Ionicons name="people-outline" size={16} color={c.secondary} />
+                <Text style={[styles.actionLabel, { color: c.secondary, fontFamily: font.medium }]}>
+                  {scoreCount || 0} score{(scoreCount || 0) > 1 ? 's' : ''}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 }
 
-function Action({
-  label,
-  onPress,
-  done,
-  tint,
-}: {
-  label: string;
-  onPress: () => void;
-  done?: boolean;
-  tint: string;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.action,
-        {
-          backgroundColor: done ? tint : soft(tint),
-          opacity: pressed ? 0.85 : 1,
-        },
-      ]}>
-      <Text style={[styles.actionLabel, { color: done ? '#FFFFFF' : tint }]}>{label}</Text>
-    </Pressable>
-  );
-}
-
-function soft(hex: string) {
-  const h = hex.replace('#', '');
-  if (h.length !== 6) return '#F3F4F6';
-  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
-  const mix = (v: number) => Math.round(v * 0.16 + 255 * 0.84);
-  return `#${[r, g, b].map((v) => mix(v).toString(16).padStart(2, '0')).join('')}`;
-}
-
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderLeftWidth: 5,
-    padding: 16,
-    gap: 10,
-    overflow: 'visible',
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+    flexDirection: 'row',
+  },
+  rail: {
+    width: 3,
+  },
+  inner: {
+    flex: 1,
+    padding: space[5],
+    gap: space[3],
   },
   head: {
     gap: 2,
   },
   headPremium: {
-    paddingRight: 28,
+    paddingRight: 24,
   },
   crown: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: space[5],
+    right: space[5],
     zIndex: 2,
   },
-  crownGlyph: {
-    fontSize: 20,
-    lineHeight: 22,
-    fontWeight: '700',
-  },
   title: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: typeScale.lg,
+    fontWeight: typeScale.weight.semibold,
   },
   sub: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: typeScale.sm,
+    fontWeight: typeScale.weight.regular,
   },
   body: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: typeScale.md,
+    lineHeight: 22,
+    fontWeight: typeScale.weight.regular,
   },
   tip: {
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    gap: 8,
+    borderRadius: radius.md,
+    paddingVertical: space[3],
+    paddingHorizontal: space[3],
+    gap: space[2],
   },
   tipRow: {
     minHeight: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: space[2],
   },
   tipLabel: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: typeScale.md,
+    fontWeight: typeScale.weight.medium,
   },
   tipBody: {
-    fontSize: 15,
+    fontSize: typeScale.md,
     lineHeight: 22,
     paddingLeft: 24,
   },
   actions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 4,
+    gap: space[2],
+    marginTop: space[1],
   },
   action: {
     flexGrow: 1,
     minWidth: '40%',
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    minHeight: 44,
+    paddingVertical: space[3],
+    paddingHorizontal: space[3],
+    borderRadius: radius.md,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: space[2],
   },
+  actionSecondary: {},
   actionLabel: {
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: typeScale.md,
+    fontWeight: typeScale.weight.medium,
   },
 });
