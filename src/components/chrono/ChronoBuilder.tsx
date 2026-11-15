@@ -11,7 +11,7 @@ import {
 import { useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
-import { CHRONO_ICON_STROKE } from '@/components/chrono/ChronoIcon';
+import { APP_ICON_STROKE } from '@/components/AppIcon';
 import { Stepper } from '@/components/chrono/Stepper';
 import { MIX_BLOCK_META, mixTotalSeconds } from '@/lib/chrono/defaults';
 import { durationStep, fmt, intervalStep } from '@/lib/chrono/format';
@@ -184,9 +184,9 @@ export function ChronoBuilder({
                   onPress={() => setExpanded(open ? null : i)}
                   style={[styles.iconBtn, { borderColor: c.border, backgroundColor: c.raised }]}>
                   {open ? (
-                    <ChevronUp size={16} color={c.muted} strokeWidth={CHRONO_ICON_STROKE} />
+                    <ChevronUp size={16} color={c.muted} strokeWidth={APP_ICON_STROKE} />
                   ) : (
-                    <Pencil size={16} color={c.muted} strokeWidth={CHRONO_ICON_STROKE} />
+                    <Pencil size={16} color={c.muted} strokeWidth={APP_ICON_STROKE} />
                   )}
                 </Pressable>
                 <Pressable
@@ -197,7 +197,7 @@ export function ChronoBuilder({
                     setExpanded(null);
                   }}
                   style={[styles.iconBtn, { borderColor: c.border, backgroundColor: c.raised }]}>
-                  <X size={16} color={c.muted} strokeWidth={CHRONO_ICON_STROKE} />
+                  <X size={16} color={c.muted} strokeWidth={APP_ICON_STROKE} />
                 </Pressable>
               </View>
 
@@ -303,7 +303,7 @@ export function ChronoBuilder({
                 opacity: pressed ? 0.8 : 1,
               },
             ]}>
-            <Plus size={18} color={c.accent} strokeWidth={CHRONO_ICON_STROKE} />
+            <Plus size={18} color={c.accent} strokeWidth={APP_ICON_STROKE} />
             <Text style={[styles.addTxt, { color: c.accent }]}>Ajouter un bloc</Text>
           </Pressable>
         )}
@@ -313,15 +313,15 @@ export function ChronoBuilder({
         <Pressable
           onPress={() => setCdOpen((v) => !v)}
           style={[styles.setRow, { borderBottomColor: c.border }]}>
-          <Timer size={18} color={c.muted} strokeWidth={CHRONO_ICON_STROKE} />
+          <Timer size={18} color={c.muted} strokeWidth={APP_ICON_STROKE} />
           <Text style={[styles.setLabel, { color: c.text }]}>Départ différé</Text>
           <Text style={[styles.setValue, { color: c.muted }]}>
             {cfg.cd === 0 ? 'Off' : `${cfg.cd} s`}
           </Text>
           {cdOpen ? (
-            <ChevronUp size={16} color={c.muted} strokeWidth={CHRONO_ICON_STROKE} />
+            <ChevronUp size={16} color={c.muted} strokeWidth={APP_ICON_STROKE} />
           ) : (
-            <ChevronRight size={16} color={c.muted} strokeWidth={CHRONO_ICON_STROKE} />
+            <ChevronRight size={16} color={c.muted} strokeWidth={APP_ICON_STROKE} />
           )}
         </Pressable>
         {cdOpen ? (
@@ -334,7 +334,7 @@ export function ChronoBuilder({
           </View>
         ) : null}
         <View style={styles.setRow}>
-          <Volume2 size={18} color={c.muted} strokeWidth={CHRONO_ICON_STROKE} />
+          <Volume2 size={18} color={c.muted} strokeWidth={APP_ICON_STROKE} />
           <Text style={[styles.setLabel, { color: c.text }]}>Sons</Text>
           <Switch
             value={cfg.voice}
@@ -356,7 +356,7 @@ export function ChronoBuilder({
             opacity: !mix.length ? 0.4 : pressed ? 0.88 : 1,
           },
         ]}>
-        <Play size={16} color={c.onAccent} strokeWidth={CHRONO_ICON_STROKE} fill={c.onAccent} />
+        <Play size={16} color={c.onAccent} strokeWidth={APP_ICON_STROKE} fill={c.onAccent} />
         <Text style={[styles.ctaTxt, { color: c.onAccent }]}>{ctaLabel}</Text>
       </Pressable>
     </View>

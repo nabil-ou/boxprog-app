@@ -1,10 +1,11 @@
-import { SymbolView, type SymbolViewProps } from 'expo-symbols';
+import type { LucideIcon } from 'lucide-react-native';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/AppIcon';
 import { useBrand } from '@/providers/BoxProvider';
 
 interface Props {
-  icon: SymbolViewProps['name'];
+  icon: LucideIcon;
   title: string;
   body: string;
 }
@@ -14,7 +15,7 @@ export function EmptyState({ icon, title, body }: Props) {
   return (
     <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
       <View style={[styles.badge, { backgroundColor: c.primary }]}>
-        <SymbolView name={icon} size={28} tintColor={c.accent} />
+        <AppIcon icon={icon} size={28} color={c.accent} />
       </View>
       <Text style={[styles.title, { color: c.text }]}>{title}</Text>
       <Text style={[styles.body, { color: c.muted }]}>{body}</Text>

@@ -1,9 +1,9 @@
-import { SymbolView } from 'expo-symbols';
+import { Eye, EyeOff } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
+import { AppIcon } from '@/components/AppIcon';
 import { Field, type FieldProps } from '@/components/Field';
-import { symbol } from '@/lib/symbols';
 import { useBrand } from '@/providers/BoxProvider';
 
 export const PASSWORD_MIN = 8;
@@ -26,11 +26,7 @@ export function PasswordField(props: Omit<FieldProps, 'secureTextEntry' | 'right
           onPress={() => setShown((s) => !s)}
           hitSlop={6}
           style={({ pressed }) => [styles.toggle, { opacity: pressed ? 0.6 : 1 }]}>
-          <SymbolView
-            name={shown ? symbol('eye.slash', 'visibility_off') : symbol('eye', 'visibility')}
-            size={22}
-            tintColor={c.muted}
-          />
+          <AppIcon icon={shown ? EyeOff : Eye} size={22} color={c.muted} />
         </Pressable>
       }
     />

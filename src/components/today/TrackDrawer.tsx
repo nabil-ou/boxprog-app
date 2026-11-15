@@ -1,7 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Check } from 'lucide-react-native';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AppIcon } from '@/components/AppIcon';
 import { BorderRadius, FontSize, FontWeight, Spacing, font, textStyles, tint } from '@/lib/theme';
 import type { Track } from '@/lib/types';
 import { useBrand } from '@/providers/BoxProvider';
@@ -59,7 +60,7 @@ export function TrackDrawer({
                   <Text style={[styles.name, { color: c.text, fontFamily: active ? font.medium : font.regular }]}>
                     {track.name}
                   </Text>
-                  {active ? <Ionicons name="checkmark" size={18} color={c.primary} /> : null}
+                  {active ? <AppIcon icon={Check} size={18} color={c.primary} /> : null}
                 </Pressable>
               );
             })}

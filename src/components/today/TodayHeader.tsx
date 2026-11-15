@@ -1,9 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { Calendar } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AppIcon } from '@/components/AppIcon';
 import { initials } from '@/components/Avatar';
 import { DateScroller } from '@/components/today/DateScroller';
 import { DayPickerModal } from '@/components/today/DayPickerModal';
@@ -66,7 +67,7 @@ export function TodayHeader({
             softShadow,
             { backgroundColor: c.surface, borderColor: c.border, opacity: pressed ? 0.85 : 1 },
           ]}>
-          <Ionicons name="calendar-outline" size={18} color={c.text} />
+          <AppIcon icon={Calendar} size={18} color={c.text} />
         </Pressable>
       </View>
       <DateScroller value={day} today={today} onChange={onDayChange} />

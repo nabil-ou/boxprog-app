@@ -1,9 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
+import { X } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AppIcon } from '@/components/AppIcon';
 import { NoteForm } from '@/components/today/NoteForm';
 import { useBlockScores } from '@/hooks/useBlockScores';
 import { blockSubtitle, blockTitle } from '@/lib/scoring';
@@ -75,7 +76,7 @@ export function BlockSheet({
               hitSlop={12}
               accessibilityLabel="Fermer"
               style={[styles.closeBtn, softShadow, { backgroundColor: c.surface, borderColor: c.border }]}>
-              <Ionicons name="close" size={18} color={c.muted} />
+              <AppIcon icon={X} size={18} color={c.muted} />
             </Pressable>
           </View>
 

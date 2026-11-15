@@ -5,7 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ChronoBuilder } from '@/components/chrono/ChronoBuilder';
-import { CHRONO_ICON_STROKE } from '@/components/chrono/ChronoIcon';
+import { APP_ICON_STROKE } from '@/components/AppIcon';
 import { BorderRadius, FontSize, FontWeight, Spacing, font } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 import { useChronoConfig } from '@/providers/ChronoProvider';
@@ -29,7 +29,7 @@ export default function ChronoSetupScreen() {
           hitSlop={12}
           accessibilityLabel="Retour"
           style={styles.headerBtn}>
-          <ChevronLeft size={22} color={c.onPrimary} strokeWidth={CHRONO_ICON_STROKE} />
+          <ChevronLeft size={22} color={c.onPrimary} strokeWidth={APP_ICON_STROKE} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: c.onPrimary }]}>Mon chrono</Text>
         <View style={styles.headerBtn} />

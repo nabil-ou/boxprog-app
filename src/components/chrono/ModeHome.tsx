@@ -2,7 +2,8 @@ import { ChevronRight, Plus, Timer } from "lucide-react-native";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { CHRONO_ICON_STROKE, ChronoIcon } from "@/components/chrono/ChronoIcon";
+import { APP_ICON_STROKE, AppIcon } from "@/components/AppIcon";
+import { PrimaryHeader } from "@/components/PrimaryHeader";
 import {
   HOME_FORMATS,
   OTHER_FORMATS,
@@ -34,16 +35,7 @@ export function ModeHome({
 
   return (
     <View style={[styles.root, { backgroundColor: c.background }]}>
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: c.primary, paddingTop: insets.top + Spacing.S },
-        ]}
-      >
-        <ChronoIcon icon={Timer} size={24} color={c.accent} />
-        <Text style={[styles.headerTitle, { color: c.onPrimary }]}>Chrono</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <PrimaryHeader title="Chrono" icon={Timer} />
 
       <ScrollView
         contentContainerStyle={[
@@ -72,7 +64,7 @@ export function ModeHome({
                 },
               ]}
             >
-              <ChronoIcon icon={f.Icon} size={24} color={c.accent} />
+              <AppIcon icon={f.Icon} size={24} color={c.accent} />
               <Text style={[styles.cardTitle, { color: c.text }]}>
                 {f.title}
               </Text>
@@ -98,7 +90,7 @@ export function ModeHome({
             <Plus
               size={18}
               color={c.onAccent}
-              strokeWidth={CHRONO_ICON_STROKE}
+              strokeWidth={APP_ICON_STROKE}
             />
           </View>
           <View style={styles.createCopy}>
@@ -112,7 +104,7 @@ export function ModeHome({
           <ChevronRight
             size={18}
             color={c.onPrimaryMuted}
-            strokeWidth={CHRONO_ICON_STROKE}
+            strokeWidth={APP_ICON_STROKE}
           />
         </Pressable>
 
@@ -150,22 +142,6 @@ export function ModeHome({
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.S,
-    paddingHorizontal: Spacing.M,
-    paddingBottom: Spacing.M,
-  },
-  headerTitle: {
-    flex: 1,
-    textAlign: "center",
-    fontFamily: font.semibold,
-    fontSize: FontSize.L,
-    fontWeight: FontWeight.SEMI_BOLD,
-    marginRight: 22,
-  },
-  headerSpacer: { width: 22 },
   scroll: {
     paddingHorizontal: Spacing.M,
     paddingTop: Spacing.L,

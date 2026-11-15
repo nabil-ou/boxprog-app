@@ -1,5 +1,13 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import {
+  ChevronDown,
+  CirclePlus,
+  Lightbulb,
+  Pencil,
+  Ribbon,
+  Timer,
+  Users,
+} from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
@@ -11,6 +19,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { AppIcon } from "@/components/AppIcon";
 import { mapBlockToSetup, setupParamsToQuery } from "@/lib/chrono/mapBlock";
 import { blockSubtitle, blockTitle, levelText } from "@/lib/scoring";
 import {
@@ -146,7 +155,7 @@ export function BlockCard({
                       opacity: pressed ? 0.85 : 1,
                     },
                   ]}>
-                  <Ionicons name="timer-outline" size={16} color={tipInk} />
+                  <AppIcon icon={Timer} size={16} color={tipInk} />
                 </Pressable>
               ) : null}
             </View>
@@ -154,7 +163,7 @@ export function BlockCard({
         </View>
         {block.premium ? (
           <View style={styles.crown} accessibilityLabel="Premium">
-            <Ionicons name="ribbon-outline" size={16} color={c.accent} />
+            <AppIcon icon={Ribbon} size={16} color={c.accent} />
           </View>
         ) : null}
         {body ? (
@@ -177,13 +186,13 @@ export function BlockCard({
           >
             <View style={styles.tipRow}>
               <View style={[styles.tipIcon, { backgroundColor: tipIconBg }]}>
-                <Ionicons name="bulb" size={13} color={tipInk} />
+                <AppIcon icon={Lightbulb} size={13} color={tipInk} />
               </View>
               <Text style={[styles.tipLabel, { color: copy }]}>
                 Coach tip
               </Text>
               <Animated.View style={chevronStyle}>
-                <Ionicons name="chevron-down" size={14} color={tipInk} />
+                <AppIcon icon={ChevronDown} size={14} color={tipInk} />
               </Animated.View>
             </View>
             <View>
@@ -225,8 +234,8 @@ export function BlockCard({
                 },
               ]}
             >
-              <Ionicons
-                name={noteDone ? "create-outline" : "add-circle-outline"}
+              <AppIcon
+                icon={noteDone ? Pencil : CirclePlus}
                 size={15}
                 color={noteDone ? c.accent : c.onAccent}
               />
@@ -255,7 +264,7 @@ export function BlockCard({
                   },
                 ]}
               >
-                <Ionicons name="people-outline" size={14} color={c.secondary} />
+                <AppIcon icon={Users} size={14} color={c.secondary} />
                 <Text
                   style={[
                     styles.actionLabel,

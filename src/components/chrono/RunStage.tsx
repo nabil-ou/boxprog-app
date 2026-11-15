@@ -2,7 +2,7 @@ import { Volume2, VolumeX, X } from 'lucide-react-native';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CHRONO_ICON_STROKE } from '@/components/chrono/ChronoIcon';
+import { APP_ICON_STROKE } from '@/components/AppIcon';
 import { ProgressRing } from '@/components/chrono/ProgressRing';
 import { chronoDark } from '@/lib/chrono/theme';
 import type { RunSnapshot } from '@/lib/chrono/types';
@@ -66,7 +66,7 @@ export function RunStage({
           onPress={onClose}
           hitSlop={10}
           style={[styles.iconBtn, { borderColor: d.border, backgroundColor: d.card }]}>
-          <X size={20} color={d.text} strokeWidth={CHRONO_ICON_STROKE} />
+          <X size={20} color={d.text} strokeWidth={APP_ICON_STROKE} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: d.text }]} numberOfLines={1}>
           {title || 'Chrono'}
@@ -77,9 +77,9 @@ export function RunStage({
           hitSlop={10}
           style={[styles.iconBtn, { borderColor: d.border, backgroundColor: d.card }]}>
           {voiceOn ? (
-            <Volume2 size={20} color={d.accent} strokeWidth={CHRONO_ICON_STROKE} />
+            <Volume2 size={20} color={d.accent} strokeWidth={APP_ICON_STROKE} />
           ) : (
-            <VolumeX size={20} color={d.muted} strokeWidth={CHRONO_ICON_STROKE} />
+            <VolumeX size={20} color={d.muted} strokeWidth={APP_ICON_STROKE} />
           )}
         </Pressable>
       </View>

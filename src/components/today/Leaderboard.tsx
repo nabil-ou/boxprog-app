@@ -1,7 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Flame } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/AppIcon';
 import { ChipGroup } from '@/components/Chip';
 import { compareScores, showScore } from '@/lib/scoring';
 import { BorderRadius, FontSize, FontWeight, Spacing, font, textStyles, tint } from '@/lib/theme';
@@ -105,12 +106,12 @@ export function Leaderboard({
                 </Text>
                 {isMe ? (
                   <View style={styles.bumpBtn}>
-                    <Ionicons name="flame-outline" size={14} color={c.muted} />
+                    <AppIcon icon={Flame} size={14} color={c.muted} />
                     <Text style={[styles.bumpCount, { color: c.muted }]}>{r.bumps.length}</Text>
                   </View>
                 ) : (
                   <Pressable onPress={() => onBump(r)} hitSlop={8} style={styles.bumpBtn}>
-                    <Ionicons name="flame-outline" size={14} color={bumped ? c.accent : c.muted} />
+                    <AppIcon icon={Flame} size={14} color={bumped ? c.accent : c.muted} />
                     <Text style={[styles.bumpCount, { color: bumped ? c.accent : c.muted }]}>{r.bumps.length}</Text>
                   </Pressable>
                 )}

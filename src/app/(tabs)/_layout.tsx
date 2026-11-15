@@ -1,16 +1,18 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Link, Tabs } from "expo-router";
-import { Pressable, View, type ColorValue } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Link, Tabs } from 'expo-router';
+import type { LucideIcon } from 'lucide-react-native';
+import { Dumbbell, Megaphone, Timer, Trophy } from 'lucide-react-native';
+import { Pressable, View, type ColorValue } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Avatar } from "@/components/Avatar";
-import { TAB_BAR_CONTENT, tabBarStyle } from "@/lib/tabBar";
-import { FontSize, FontWeight, Spacing, font } from "@/lib/theme";
-import { useActiveBox, useBrand } from "@/providers/BoxProvider";
+import { APP_ICON_STROKE } from '@/components/AppIcon';
+import { Avatar } from '@/components/Avatar';
+import { TAB_BAR_CONTENT, tabBarStyle } from '@/lib/tabBar';
+import { FontSize, FontWeight, Spacing, font } from '@/lib/theme';
+import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
-function tabIcon(name: keyof typeof Ionicons.glyphMap) {
+function tabIcon(Icon: LucideIcon) {
   function TabIcon({ color, size }: { color: ColorValue; size: number }) {
-    return <Ionicons name={name} color={color} size={size ?? 22} />;
+    return <Icon color={color} size={size ?? 22} strokeWidth={APP_ICON_STROKE} />;
   }
   return TabIcon;
 }
@@ -48,8 +50,8 @@ export default function TabLayout() {
         headerRight: () => <ProfileButton />,
         tabBarStyle: tabBarStyle(c, insets.bottom),
         tabBarItemStyle: {
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center',
           height: TAB_BAR_CONTENT,
           paddingVertical: 0,
         },
@@ -67,27 +69,34 @@ export default function TabLayout() {
           marginBottom: 0,
           lineHeight: 14,
         },
-      }}
-    >
+      }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: "WOD",
+          title: 'WOD',
           headerShown: false,
-          tabBarIcon: tabIcon("barbell-outline"),
+          tabBarIcon: tabIcon(Dumbbell),
         }}
       />
       <Tabs.Screen
         name="actus"
-        options={{ title: "Actus", tabBarIcon: tabIcon("megaphone-outline") }}
+        options={{
+          title: 'Actus',
+          headerShown: false,
+          tabBarIcon: tabIcon(Megaphone),
+        }}
       />
       <Tabs.Screen
         name="chrono"
-        options={{ title: "Chrono", headerShown: false, tabBarIcon: tabIcon("stopwatch-outline") }}
+        options={{ title: 'Chrono', headerShown: false, tabBarIcon: tabIcon(Timer) }}
       />
       <Tabs.Screen
         name="records"
-        options={{ title: "PR", tabBarIcon: tabIcon("ribbon-outline") }}
+        options={{
+          title: 'PR',
+          headerShown: false,
+          tabBarIcon: tabIcon(Trophy),
+        }}
       />
     </Tabs>
   );

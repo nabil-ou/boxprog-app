@@ -1,7 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AppIcon } from '@/components/AppIcon';
 import { addDays, addMonths, monthGrid, monthTitle, startOfMonth, todayIso } from '@/lib/dates';
 import { BorderRadius, FontSize, FontWeight, Height, Spacing, font, softShadow, textStyles } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
@@ -56,7 +57,7 @@ export function DayPickerModal({
               disabled={!canPrev}
               hitSlop={10}
               style={[styles.navBtn, softShadow, { backgroundColor: c.surface, borderColor: c.border, opacity: canPrev ? 1 : 0.3 }]}>
-              <Ionicons name="chevron-back" size={18} color={c.text} />
+              <AppIcon icon={ChevronLeft} size={18} color={c.text} />
             </Pressable>
             <Text style={t.titleSection}>{monthTitle(month)}</Text>
             <Pressable
@@ -64,7 +65,7 @@ export function DayPickerModal({
               disabled={!canNext}
               hitSlop={10}
               style={[styles.navBtn, softShadow, { backgroundColor: c.surface, borderColor: c.border, opacity: canNext ? 1 : 0.3 }]}>
-              <Ionicons name="chevron-forward" size={18} color={c.text} />
+              <AppIcon icon={ChevronRight} size={18} color={c.text} />
             </Pressable>
           </View>
 
