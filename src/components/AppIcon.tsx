@@ -1,7 +1,7 @@
 import type { LucideIcon, LucideProps } from 'lucide-react-native';
 
 /** Stroke Lucide unique pour toute l’app. */
-export const APP_ICON_STROKE = 1.5;
+export const APP_ICON_STROKE = 2;
 
 export function AppIcon({
   icon: Icon,

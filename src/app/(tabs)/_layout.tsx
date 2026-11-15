@@ -1,6 +1,6 @@
 import { Link, Tabs } from 'expo-router';
 import type { LucideIcon } from 'lucide-react-native';
-import { Dumbbell, Megaphone, Timer, Trophy } from 'lucide-react-native';
+import { Dumbbell, Medal, Megaphone, Timer } from 'lucide-react-native';
 import { Pressable, View, type ColorValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -95,7 +95,7 @@ export default function TabLayout() {
         options={{
           title: 'PR',
           headerShown: false,
-          tabBarIcon: tabIcon(Trophy),
+          tabBarIcon: tabIcon(Medal),
         }}
       />
     </Tabs>
