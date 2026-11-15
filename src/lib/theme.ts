@@ -1,15 +1,15 @@
-/**
- * Design system aligné SuperHote (spacing, radii, type, ombres).
- * Couleurs de marque white-label : primary / accent viennent de la box.
- */
-import { StyleSheet, type TextStyle, type ViewStyle } from 'react-native';
+import { StyleSheet, type TextStyle, type ViewStyle } from "react-native";
 
-import { BRAND_FALLBACK } from '@/config/box';
-import { KIND_COLORS, type BlockKind, type KindColors } from '@/lib/types';
+import { BRAND_FALLBACK } from "@/config/box";
+import { KIND_COLORS, type BlockKind, type KindColors } from "@/lib/types";
 
 function rgb(hex: string): [number, number, number] {
-  const h = hex.replace('#', '');
-  return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)) as [number, number, number];
+  const h = hex.replace("#", "");
+  return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)) as [
+    number,
+    number,
+    number,
+  ];
 }
 
 export function luminance(hex: string): number {
@@ -26,7 +26,9 @@ export function contrast(a: string, b: string): number {
 }
 
 export function onColor(bg: string): string {
-  return contrast(bg, '#FFFFFF') >= contrast(bg, '#111111') ? '#FFFFFF' : '#111111';
+  return contrast(bg, "#FFFFFF") >= contrast(bg, "#111111")
+    ? "#FFFFFF"
+    : "#111111";
 }
 
 export function isHex(v: string) {
@@ -36,15 +38,24 @@ export function isHex(v: string) {
 export function mix(hex: string, other: string, t: number): string {
   const a = rgb(hex),
     b = rgb(other);
-  return '#' + a.map((v, i) => Math.round(v + (b[i] - v) * t).toString(16).padStart(2, '0')).join('').toUpperCase();
+  return (
+    "#" +
+    a
+      .map((v, i) =>
+        Math.round(v + (b[i] - v) * t)
+          .toString(16)
+          .padStart(2, "0"),
+      )
+      .join("")
+      .toUpperCase()
+  );
 }
 
 export function tint(hex: string, amount: number): string {
-  if (!isHex(hex)) return '#F7F7F7';
-  return mix(hex, '#FFFFFF', amount);
+  if (!isHex(hex)) return "#F7F7F7";
+  return mix(hex, "#FFFFFF", amount);
 }
 
-/** Échelle SuperHote. */
 export const Spacing = {
   XXS: 4,
   XS: 8,
@@ -80,10 +91,10 @@ export const FontSize = {
 } as const;
 
 export const FontWeight = {
-  NORMAL: '400' as const,
-  MEDIUM: '500' as const,
-  SEMI_BOLD: '600' as const,
-  BOLD: '700' as const,
+  NORMAL: "400" as const,
+  MEDIUM: "500" as const,
+  SEMI_BOLD: "600" as const,
+  BOLD: "700" as const,
 };
 
 export const Height = {
@@ -94,9 +105,8 @@ export const Height = {
   INPUT_M: 56,
 } as const;
 
-/** Ombre chrome SuperHote (boutons / icônes). */
 export const softShadow: ViewStyle = {
-  shadowColor: '#000000',
+  shadowColor: "#000000",
   shadowOpacity: 0.05,
   shadowRadius: 2,
   shadowOffset: { width: 0, height: 1 },
@@ -104,9 +114,9 @@ export const softShadow: ViewStyle = {
 };
 
 export const font = {
-  regular: 'DMSans_400Regular',
-  medium: 'DMSans_500Medium',
-  semibold: 'DMSans_600SemiBold',
+  regular: "DMSans_400Regular",
+  medium: "DMSans_500Medium",
+  semibold: "DMSans_600SemiBold",
 } as const;
 
 export interface Palette {
@@ -118,9 +128,7 @@ export interface Palette {
   ink: string;
   background: string;
   surface: string;
-  /** SuperHote greyLight */
   raised: string;
-  /** SuperHote neutralLight */
   neutral: string;
   text: string;
   secondary: string;
@@ -131,15 +139,18 @@ export interface Palette {
 
 export function kindColor(kind: BlockKind, custom?: KindColors | null): string {
   const c = custom?.[kind];
-  return c && isHex(c) ? c : KIND_COLORS[kind] ?? '#475569';
+  return c && isHex(c) ? c : (KIND_COLORS[kind] ?? "#475569");
 }
 
-export function makePalette(primary = BRAND_FALLBACK.primary, accent = BRAND_FALLBACK.accent): Palette {
+export function makePalette(
+  primary = BRAND_FALLBACK.primary,
+  accent = BRAND_FALLBACK.accent,
+): Palette {
   const p = isHex(primary) ? primary : BRAND_FALLBACK.primary;
   const a = isHex(accent) ? accent : BRAND_FALLBACK.accent;
   const onPrimary = onColor(p);
   let ink = p;
-  while (contrast(ink, '#FFFFFF') < 4.5) ink = mix(ink, '#000000', 0.15);
+  while (contrast(ink, "#FFFFFF") < 4.5) ink = mix(ink, "#000000", 0.15);
   return {
     primary: p,
     onPrimary,
@@ -147,20 +158,18 @@ export function makePalette(primary = BRAND_FALLBACK.primary, accent = BRAND_FAL
     accent: a,
     onAccent: onColor(a),
     ink,
-    // Neutres SuperHote light
-    background: '#F7F7F7',
-    surface: '#FFFFFF',
-    raised: '#F7F7F7',
-    neutral: '#F0F0EF',
-    text: '#2C2C2B',
-    secondary: '#808080',
-    muted: '#808080',
-    border: '#E4E4E3',
-    danger: '#B91C1C',
+    background: "#F7F7F7",
+    surface: "#FFFFFF",
+    raised: "#F7F7F7",
+    neutral: "#F0F0EF",
+    text: "#2C2C2B",
+    secondary: "#808080",
+    muted: "#808080",
+    border: "#E4E4E3",
+    danger: "#B91C1C",
   };
 }
 
-/** Styles texte SuperHote (TitleSection / Body / BodySmall). */
 export function textStyles(c: Palette): Record<string, TextStyle> {
   return StyleSheet.create({
     titleSection: {

@@ -1,4 +1,8 @@
 import {
+  BarlowCondensed_500Medium,
+  BarlowCondensed_700Bold,
+} from '@expo-google-fonts/barlow-condensed';
+import {
   DMSans_400Regular,
   DMSans_500Medium,
   DMSans_600SemiBold,
@@ -34,6 +38,8 @@ export default function RootLayout() {
     DMSans_400Regular,
     DMSans_500Medium,
     DMSans_600SemiBold,
+    BarlowCondensed_500Medium,
+    BarlowCondensed_700Bold,
   });
 
   useEffect(() => {

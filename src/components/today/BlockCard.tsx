@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
@@ -10,6 +11,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { mapBlockToSetup, setupParamsToQuery } from "@/lib/chrono/mapBlock";
 import { blockSubtitle, blockTitle, levelText } from "@/lib/scoring";
 import {
   BorderRadius,
@@ -121,7 +123,33 @@ export function BlockCard({
             {blockTitle(block)}
           </Text>
           {subtitle ? (
-            <Text style={[styles.meta, { color: copy }]}>{subtitle}</Text>
+            <View style={styles.metaRow}>
+              <Text style={[styles.meta, { color: copy, flex: 1 }]}>{subtitle}</Text>
+              {block.timer_format ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Lancer le chrono"
+                  hitSlop={10}
+                  onPress={() => {
+                    const mapped = mapBlockToSetup(block.timer_format, block.minutes);
+                    if (!mapped) return;
+                    router.push({
+                      pathname: "/(tabs)/chrono/setup",
+                      params: setupParamsToQuery(mapped),
+                    });
+                  }}
+                  style={({ pressed }) => [
+                    styles.timerBtn,
+                    {
+                      backgroundColor: tipWash,
+                      borderColor: tipBorder,
+                      opacity: pressed ? 0.85 : 1,
+                    },
+                  ]}>
+                  <Ionicons name="timer-outline" size={16} color={tipInk} />
+                </Pressable>
+              ) : null}
+            </View>
           ) : null}
         </View>
         {block.premium ? (
@@ -274,11 +302,24 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: -0.4,
   },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.XS,
+  },
   meta: {
     fontFamily: font.regular,
     fontSize: FontSize.XS,
     fontWeight: FontWeight.NORMAL,
     lineHeight: 16,
+  },
+  timerBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: BorderRadius.FULL,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   body: {
     fontFamily: font.semibold,
