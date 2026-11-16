@@ -1,8 +1,8 @@
-import { Medal } from "lucide-react-native";
 import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppDrawer } from "@/components/AppDrawer";
 import { PrimaryHeader } from "@/components/PrimaryHeader";
 import { PrCategoryRow } from "@/components/records/PrCategoryRow";
 import { PrFamilyChips } from "@/components/records/PrFamilyChips";
@@ -27,6 +27,7 @@ export default function RecordsScreen() {
   const [category, setCategory] = useState<PrCategory>("lift");
   const [family, setFamily] = useState<PrFamilyId | "all">("all");
   const [query, setQuery] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const families = useMemo(() => familiesForCategory(category), [category]);
 
@@ -42,7 +43,7 @@ export default function RecordsScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: c.background }]}>
-      <PrimaryHeader title="Mes PR" icon={Medal} />
+      <PrimaryHeader title="Mes PR" onOpenMenu={() => setDrawerOpen(true)} />
 
       <ScrollView
         contentContainerStyle={[
@@ -62,6 +63,7 @@ export default function RecordsScreen() {
         />
         <PrRecordList title={listTitleForCategory(category)} groups={groups} values={bestByMovement} />
       </ScrollView>
+      <AppDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </View>
   );
 }

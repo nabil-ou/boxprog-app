@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import type { LucideIcon } from 'lucide-react-native';
-import { Dumbbell, Medal, Megaphone, Timer, User } from 'lucide-react-native';
+import { Dumbbell, House, Medal, Users } from 'lucide-react-native';
 import type { ColorValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -60,22 +60,26 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          title: 'Home',
+          headerShown: false,
+          tabBarIcon: tabIcon(House),
+        }}
+      />
+      <Tabs.Screen
+        name="wod"
+        options={{
           title: 'WOD',
           headerShown: false,
           tabBarIcon: tabIcon(Dumbbell),
         }}
       />
       <Tabs.Screen
-        name="actus"
+        name="communaute"
         options={{
-          title: 'Actus',
+          title: 'Communauté',
           headerShown: false,
-          tabBarIcon: tabIcon(Megaphone),
+          tabBarIcon: tabIcon(Users),
         }}
-      />
-      <Tabs.Screen
-        name="chrono"
-        options={{ title: 'Chrono', headerShown: false, tabBarIcon: tabIcon(Timer) }}
       />
       <Tabs.Screen
         name="records"
@@ -85,14 +89,10 @@ export default function TabLayout() {
           tabBarIcon: tabIcon(Medal),
         }}
       />
-      <Tabs.Screen
-        name="profil"
-        options={{
-          title: 'Profil',
-          headerShown: false,
-          tabBarIcon: tabIcon(User),
-        }}
-      />
+      <Tabs.Screen name="chrono" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="profil" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="reserver" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="planning" options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

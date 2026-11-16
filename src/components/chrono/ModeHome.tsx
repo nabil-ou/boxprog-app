@@ -4,11 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { APP_ICON_STROKE, AppIcon } from "@/components/AppIcon";
 import { PrimaryHeader } from "@/components/PrimaryHeader";
-import {
-  HOME_FORMATS,
-  OTHER_FORMATS,
-  type OtherFormatId,
-} from "@/lib/chrono/defaults";
+import { HOME_FORMATS } from "@/lib/chrono/defaults";
 import type { HomeFormat } from "@/lib/chrono/types";
 import {
   BorderRadius,
@@ -23,19 +19,25 @@ import { useBrand } from "@/providers/BoxProvider";
 
 export function ModeHome({
   onSelect,
-  onOther,
   onCreate,
+  onBack,
 }: {
   onSelect: (format: HomeFormat) => void;
-  onOther: (id: OtherFormatId) => void;
   onCreate: () => void;
+  onBack: () => void;
 }) {
   const c = useBrand();
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.root, { backgroundColor: c.background }]}>
-      <PrimaryHeader title="Chrono" icon={Timer} />
+      <PrimaryHeader
+        title="Chrono"
+        onBack={onBack}
+        right={
+          <Timer size={22} color={c.accent} strokeWidth={APP_ICON_STROKE} />
+        }
+      />
 
       <ScrollView
         contentContainerStyle={[
@@ -107,34 +109,6 @@ export function ModeHome({
             strokeWidth={APP_ICON_STROKE}
           />
         </Pressable>
-
-        <View style={styles.otherSection}>
-          <Text style={[styles.otherTitle, { color: c.muted }]}>
-            Autres formats
-          </Text>
-          <View style={styles.otherRow}>
-            {OTHER_FORMATS.map((f) => (
-              <Pressable
-                key={f.id}
-                accessibilityRole="button"
-                onPress={() => onOther(f.id)}
-                style={({ pressed }) => [
-                  styles.pill,
-                  softShadow,
-                  {
-                    backgroundColor: c.surface,
-                    borderColor: c.border,
-                    opacity: pressed ? 0.85 : 1,
-                  },
-                ]}
-              >
-                <Text style={[styles.pillTxt, { color: c.text }]}>
-                  {f.title}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
       </ScrollView>
     </View>
   );
@@ -205,29 +179,5 @@ const styles = StyleSheet.create({
   createSub: {
     fontFamily: font.regular,
     fontSize: FontSize.XXS + 1,
-  },
-  otherSection: { gap: Spacing.XS },
-  otherTitle: {
-    fontFamily: font.medium,
-    fontSize: FontSize.XS,
-    fontWeight: FontWeight.MEDIUM,
-  },
-  otherRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: Spacing.XS,
-  },
-  pill: {
-    paddingHorizontal: Spacing.S,
-    paddingVertical: Spacing.XS,
-    borderRadius: BorderRadius.XL,
-    borderWidth: 1,
-    minHeight: 36,
-    justifyContent: "center",
-  },
-  pillTxt: {
-    fontFamily: font.medium,
-    fontSize: FontSize.XS,
-    fontWeight: FontWeight.MEDIUM,
   },
 });

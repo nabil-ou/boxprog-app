@@ -6,20 +6,23 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { APP_ICON_STROKE } from '@/components/AppIcon';
+import { BoxLogoButton } from '@/components/BoxLogoButton';
 import { FontSize, FontWeight, Spacing, font } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 
-/** Header bandeau primary — icône accent + titre centré + slot droit optionnel. */
+/** Header bandeau primary — logo menu / retour / icône + titre centré + slot droit optionnel. */
 export function PrimaryHeader({
   title,
   icon: Icon,
   right,
   onBack,
+  onOpenMenu,
 }: {
   title: string;
   icon?: LucideIcon;
   right?: ReactNode;
   onBack?: () => void;
+  onOpenMenu?: () => void;
 }) {
   const c = useBrand();
   const insets = useSafeAreaInsets();
@@ -28,7 +31,9 @@ export function PrimaryHeader({
     <View style={[styles.header, { backgroundColor: c.primary, paddingTop: insets.top + Spacing.S }]}>
       <StatusBar style={c.onPrimary === '#FFFFFF' ? 'light' : 'dark'} />
       <View style={styles.side}>
-        {onBack ? (
+        {onOpenMenu ? (
+          <BoxLogoButton onPress={onOpenMenu} />
+        ) : onBack ? (
           <Pressable accessibilityRole="button" accessibilityLabel="Retour" onPress={onBack} hitSlop={8}>
             <ChevronLeft size={22} color={c.onPrimary} strokeWidth={APP_ICON_STROKE} />
           </Pressable>

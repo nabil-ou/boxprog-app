@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { ChevronRight, Minus, Plus } from "lucide-react-native";
+import { ChevronRight } from "lucide-react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { AppIcon } from "@/components/AppIcon";
@@ -75,23 +75,17 @@ export function PrRecordList({
                 ]}
               >
                 <Text style={[styles.name, { color: c.text }]}>{m.name}</Text>
-                {pr != null ? (
-                  <View style={styles.valueRow}>
-                    <Text style={[styles.value, { color: c.text }]}>
-                      {formatPrValue(pr, m.unit)}
-                    </Text>
-                    <AppIcon icon={ChevronRight} size={16} color={c.muted} />
-                  </View>
-                ) : (
-                  <View style={styles.emptyActions}>
-                    <View style={[styles.ghostBtn, { borderColor: c.border }]}>
-                      <AppIcon icon={Minus} size={14} color={c.muted} />
-                    </View>
-                    <View style={[styles.ghostBtn, { borderColor: c.border }]}>
-                      <AppIcon icon={Plus} size={14} color={c.muted} />
-                    </View>
-                  </View>
-                )}
+                <View style={styles.valueRow}>
+                  <Text
+                    style={[
+                      styles.value,
+                      { color: pr != null ? c.text : c.muted },
+                    ]}
+                  >
+                    {pr != null ? formatPrValue(pr, m.unit) : "—"}
+                  </Text>
+                  <AppIcon icon={ChevronRight} size={16} color={c.muted} />
+                </View>
               </Pressable>
             );
           })}
@@ -147,18 +141,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.S,
     fontWeight: FontWeight.SEMI_BOLD,
     fontVariant: ["tabular-nums"],
-  },
-  emptyActions: {
-    flexDirection: "row",
-    gap: Spacing.XS,
-  },
-  ghostBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: BorderRadius.S,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
   hint: {
     fontFamily: font.regular,

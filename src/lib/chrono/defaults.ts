@@ -102,19 +102,6 @@ export function presetBlock(format: HomeFormat): MixBlock {
   }
 }
 
-export type OtherFormatId = 'e2mom' | 'deathby' | 'chipper';
-
-/** Secondary format chips under the main grid (maquette « Autres formats »). */
-export const OTHER_FORMATS: {
-  id: OtherFormatId;
-  title: string;
-  mix: MixBlock[];
-}[] = [
-  { id: 'e2mom', title: 'E2MOM', mix: [{ m: 'emom', v: 10, iv: 120 }] },
-  { id: 'deathby', title: 'Death by', mix: [{ m: 'emom', v: 20, iv: 60 }] },
-  { id: 'chipper', title: 'Chipper', mix: [{ m: 'fort', v: 20 }] },
-];
-
 export function workRestRounds(cfg: ChronoConfig): [number, number, number] {
   return cfg.mode === 'tabata' ? [cfg.tw, cfg.tr, cfg.tn] : [cfg.iw, cfg.ir, cfg.in];
 }

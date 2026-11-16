@@ -39,10 +39,12 @@ function weekIndexOf(weeks: string[][], day: string): number {
 export function DateScroller({
   value,
   today = todayIso(),
+  minDate,
   onChange,
 }: {
   value: string;
   today?: string;
+  minDate?: string;
   onChange: (day: string) => void;
 }) {
   const { width } = useWindowDimensions();
@@ -96,6 +98,7 @@ export function DateScroller({
   }, [value, weeks, scrollToWeek]);
 
   const onDayPress = (day: string) => {
+    if (minDate && day < minDate) return;
     fromScroll.current = false;
     lastWeekday.current = isoDow(day);
     onChange(day);
@@ -110,9 +113,13 @@ export function DateScroller({
     fromScroll.current = true;
     const week = weeks[idx];
     if (!week) return;
-    const target =
+    const preferred =
       week.find((d) => isoDow(d) === lastWeekday.current) ?? week[0];
-    onChange(target);
+    const valid =
+      minDate && preferred < minDate
+        ? (week.find((d) => d >= minDate) ?? minDate)
+        : preferred;
+    onChange(valid);
   };
 
   const renderWeek = useCallback(
@@ -124,13 +131,14 @@ export function DateScroller({
             day={day}
             selected={day === value}
             isToday={day === today}
+            disabled={Boolean(minDate && day < minDate)}
             onPress={() => onDayPress(day)}
           />
         ))}
       </View>
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [weekWidth, value, today],
+    [weekWidth, value, today, minDate],
   );
 
   return (
@@ -164,7 +172,7 @@ export function DateScroller({
         maxToRenderPerBatch={3}
         updateCellsBatchingPeriod={50}
         removeClippedSubviews
-        extraData={value}
+        extraData={`${value}:${minDate ?? ""}`}
         onScrollToIndexFailed={(info) => {
           setTimeout(() => {
             listRef.current?.scrollToOffset({
@@ -182,11 +190,13 @@ function DayCell({
   day,
   selected,
   isToday,
+  disabled,
   onPress,
 }: {
   day: string;
   selected: boolean;
   isToday: boolean;
+  disabled?: boolean;
   onPress: () => void;
 }) {
   const c = useBrand();
@@ -196,9 +206,13 @@ function DayCell({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ selected }}
+      accessibilityState={{ selected, disabled }}
+      disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.slot, { opacity: pressed ? 0.85 : 1 }]}
+      style={({ pressed }) => [
+        styles.slot,
+        { opacity: disabled ? 0.28 : pressed ? 0.85 : 1 },
+      ]}
     >
       <View
         style={[

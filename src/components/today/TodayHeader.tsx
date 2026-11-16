@@ -1,31 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
 import { Calendar } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '@/components/AppIcon';
-import { initials } from '@/components/Avatar';
+import { BoxLogoButton } from '@/components/BoxLogoButton';
 import { DateScroller } from '@/components/today/DateScroller';
 import { DayPickerModal } from '@/components/today/DayPickerModal';
 import { addDays, mondayOf } from '@/lib/dates';
-import { BorderRadius, FontSize, FontWeight, Spacing, font, softShadow, textStyles } from '@/lib/theme';
-import { useActiveBox, useBrand } from '@/providers/BoxProvider';
+import { BorderRadius, Spacing, softShadow, textStyles } from '@/lib/theme';
+import { useBrand } from '@/providers/BoxProvider';
 
 export function TodayHeader({
   trackName,
   day,
   today,
   onDayChange,
-  onOpenTracks,
+  onOpenMenu,
 }: {
   trackName: string;
   day: string;
   today: string;
   onDayChange: (day: string) => void;
-  onOpenTracks: () => void;
+  onOpenMenu: () => void;
 }) {
-  const box = useActiveBox();
   const c = useBrand();
   const t = textStyles(c);
   const insets = useSafeAreaInsets();
@@ -40,19 +39,7 @@ export function TodayHeader({
     <View style={[styles.wrap, { backgroundColor: c.primary, paddingTop: insets.top + Spacing.XS }]}>
       <StatusBar style={c.onPrimary === '#FFFFFF' ? 'light' : 'dark'} />
       <View style={styles.top}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Choisir une programmation"
-          onPress={onOpenTracks}
-          style={({ pressed }) => [styles.iconBtn, softShadow, { backgroundColor: c.surface, borderColor: c.border, opacity: pressed ? 0.85 : 1 }]}>
-          {box.logo_url ? (
-            <Image source={{ uri: box.logo_url }} style={styles.logo} />
-          ) : (
-            <View style={[styles.logo, styles.monogram, { backgroundColor: c.accent }]}>
-              <Text style={[styles.monogramText, { color: c.onAccent }]}>{initials(box.name)}</Text>
-            </View>
-          )}
-        </Pressable>
+        <BoxLogoButton onPress={onOpenMenu} label="Ouvrir le menu" />
         <View style={styles.titleWrap} pointerEvents="none">
           <Text style={[t.titleSection, { color: c.onPrimary }]} numberOfLines={1}>
             {trackName}
@@ -103,19 +90,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-  },
-  logo: {
-    width: 36,
-    height: 36,
-  },
-  monogram: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  monogramText: {
-    fontFamily: font.semibold,
-    fontSize: FontSize.XS,
-    fontWeight: FontWeight.SEMI_BOLD,
   },
   titleWrap: {
     flex: 1,

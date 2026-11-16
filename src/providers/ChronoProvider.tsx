@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
-import { DEFAULT_CONFIG, OTHER_FORMATS, presetBlock, type OtherFormatId } from '@/lib/chrono/defaults';
+import { DEFAULT_CONFIG, presetBlock } from '@/lib/chrono/defaults';
 import { loadConfig, saveConfig } from '@/lib/chrono/persist';
 import type { ChronoConfig, ChronoMode, HomeFormat, MixBlock, MixFavorite } from '@/lib/chrono/types';
 import { MODE_NAMES } from '@/lib/chrono/types';
@@ -14,7 +14,6 @@ interface ChronoState {
   setMix: (mix: MixBlock[]) => void;
   setFavs: (favs: MixFavorite[]) => void;
   openFormat: (format: HomeFormat) => void;
-  openOther: (id: OtherFormatId) => void;
   openEmpty: () => void;
   applySetupParams: (params: Record<string, string | undefined>) => void;
 }
@@ -92,16 +91,6 @@ export function ChronoProvider({ children }: { children: ReactNode }) {
     [cfg, commit],
   );
 
-  const openOther = useCallback(
-    (id: OtherFormatId) => {
-      const other = OTHER_FORMATS.find((f) => f.id === id);
-      if (!other) return;
-      setSessionName(other.title);
-      commit({ ...cfg, mode: 'mix', mix: other.mix.map((b) => ({ ...b })) });
-    },
-    [cfg, commit],
-  );
-
   const openEmpty = useCallback(() => {
     setSessionName('');
     commit({ ...cfg, mode: 'mix', mix: [] });
@@ -149,11 +138,10 @@ export function ChronoProvider({ children }: { children: ReactNode }) {
       setMix,
       setFavs,
       openFormat,
-      openOther,
       openEmpty,
       applySetupParams,
     }),
-    [cfg, sessionName, setMode, patch, setMix, setFavs, openFormat, openOther, openEmpty, applySetupParams],
+    [cfg, sessionName, setMode, patch, setMix, setFavs, openFormat, openEmpty, applySetupParams],
   );
 
   return <ChronoContext.Provider value={value}>{children}</ChronoContext.Provider>;
