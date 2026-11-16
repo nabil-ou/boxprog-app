@@ -1,6 +1,8 @@
+import { StatusBar } from 'expo-status-bar';
 import type { LucideIcon } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { APP_ICON_STROKE } from '@/components/AppIcon';
@@ -12,18 +14,29 @@ export function PrimaryHeader({
   title,
   icon: Icon,
   right,
+  onBack,
 }: {
   title: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   right?: ReactNode;
+  onBack?: () => void;
 }) {
   const c = useBrand();
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.header, { backgroundColor: c.primary, paddingTop: insets.top + Spacing.S }]}>
+      <StatusBar style={c.onPrimary === '#FFFFFF' ? 'light' : 'dark'} />
       <View style={styles.side}>
-        <Icon size={22} color={c.accent} strokeWidth={APP_ICON_STROKE} />
+        {onBack ? (
+          <Pressable accessibilityRole="button" accessibilityLabel="Retour" onPress={onBack} hitSlop={8}>
+            <ChevronLeft size={22} color={c.onPrimary} strokeWidth={APP_ICON_STROKE} />
+          </Pressable>
+        ) : Icon ? (
+          <Icon size={22} color={c.accent} strokeWidth={APP_ICON_STROKE} />
+        ) : (
+          <View style={styles.spacer} />
+        )}
       </View>
       <Text style={[styles.title, { color: c.onPrimary }]} numberOfLines={1}>
         {title}

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { useBrand } from '@/providers/BoxProvider';
 
@@ -7,8 +7,25 @@ export function initials(name: string | null | undefined) {
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
 }
 
-export function Avatar({ name, size = 34 }: { name: string | null | undefined; size?: number }) {
+export function Avatar({
+  name,
+  size = 34,
+  uri,
+}: {
+  name: string | null | undefined;
+  size?: number;
+  uri?: string | null;
+}) {
   const c = useBrand();
+  if (uri) {
+    return (
+      <Image
+        source={{ uri }}
+        accessibilityIgnoresInvertColors
+        style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: c.raised }}
+      />
+    );
+  }
   return (
     <View
       style={[styles.circle, { width: size, height: size, borderRadius: size / 2, backgroundColor: c.accent }]}>

@@ -35,5 +35,6 @@ export function errMsg(e: unknown): string {
   if (/rate limit|only request this after/i.test(m)) return 'Trop de demandes : réessaie dans quelques minutes';
   if (/Network request failed|Failed to fetch/.test(m)) return 'Connexion impossible, vérifie ton réseau';
   if (/row-level security/.test(m)) return 'Action non autorisée';
+  if (/Cannot coerce the result to a single JSON object/.test(m)) return 'Profil introuvable';
   return m;
 }

@@ -1,13 +1,13 @@
-import { Link, Tabs } from 'expo-router';
+import { Tabs } from 'expo-router';
 import type { LucideIcon } from 'lucide-react-native';
-import { Dumbbell, Medal, Megaphone, Timer } from 'lucide-react-native';
-import { Pressable, View, type ColorValue } from 'react-native';
+import { Dumbbell, Medal, Megaphone, Timer, User } from 'lucide-react-native';
+import type { ColorValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { APP_ICON_STROKE } from '@/components/AppIcon';
-import { Avatar } from '@/components/Avatar';
+import { useReminderSync } from '@/hooks/useReminderSync';
 import { TAB_BAR_CONTENT, tabBarStyle } from '@/lib/tabBar';
-import { FontSize, FontWeight, Spacing, font } from '@/lib/theme';
+import { FontSize, FontWeight, font } from '@/lib/theme';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
 function tabIcon(Icon: LucideIcon) {
@@ -17,23 +17,11 @@ function tabIcon(Icon: LucideIcon) {
   return TabIcon;
 }
 
-function ProfileButton() {
-  const box = useActiveBox();
-  return (
-    <View style={{ marginHorizontal: Spacing.M }}>
-      <Link href="/profil" asChild>
-        <Pressable accessibilityLabel="Mon profil" hitSlop={8}>
-          <Avatar name={box.my_display_name} size={32} />
-        </Pressable>
-      </Link>
-    </View>
-  );
-}
-
 export default function TabLayout() {
   const box = useActiveBox();
   const c = useBrand();
   const insets = useSafeAreaInsets();
+  useReminderSync(box.training_days, box.name);
 
   return (
     <Tabs
@@ -47,7 +35,6 @@ export default function TabLayout() {
           fontSize: FontSize.L,
         },
         headerShadowVisible: false,
-        headerRight: () => <ProfileButton />,
         tabBarStyle: tabBarStyle(c, insets.bottom),
         tabBarItemStyle: {
           justifyContent: 'center',
@@ -96,6 +83,14 @@ export default function TabLayout() {
           title: 'PR',
           headerShown: false,
           tabBarIcon: tabIcon(Medal),
+        }}
+      />
+      <Tabs.Screen
+        name="profil"
+        options={{
+          title: 'Profil',
+          headerShown: false,
+          tabBarIcon: tabIcon(User),
         }}
       />
     </Tabs>

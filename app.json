@@ -1,24 +1,25 @@
 {
   "expo": {
-    "name": "CF Test",
+    "name": "Blue Monkey",
     "slug": "boxprog-cf-test",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "cftest",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.boxprog.cftest",
       "appleTeamId": "7N99A2P4JG",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "L’app utilise tes photos pour ta photo de profil."
       }
     },
     "android": {
       "package": "app.boxprog.cftest",
       "adaptiveIcon": {
-        "backgroundColor": "#14213D",
+        "backgroundColor": "#000000",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -37,12 +38,28 @@
         {
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#14213D"
+          "backgroundColor": "#14213D",
+          "imageWidth": 220
         }
       ],
       "expo-sqlite",
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "L’app utilise tes photos pour ta photo de profil.",
+          "cameraPermission": "L’app utilise l’appareil photo pour ta photo de profil.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "enableRemoteNotifications": false
+        }
+      ],
+      "./plugins/withLocalNotificationsOnly.js"
     ],
     "experiments": {
       "typedRoutes": true

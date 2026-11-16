@@ -73,7 +73,7 @@ export function Leaderboard({
                 style={[
                   styles.row,
                   i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.border },
-                  isMe && { backgroundColor: tint(c.primary, 0.94) },
+                  isMe && { backgroundColor: tint(c.primary, 0.94, c.background) },
                 ]}>
                 <Text
                   style={[

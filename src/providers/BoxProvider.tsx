@@ -5,6 +5,7 @@ import { errMsg, supabase } from '@/lib/supabase';
 import { makePalette, type Palette } from '@/lib/theme';
 import type { BoxPublic } from '@/lib/types';
 import { useAuth } from '@/providers/AuthProvider';
+import { useTheme } from '@/providers/ThemeProvider';
 
 /**
  * Où en est l'utilisateur avec la box de l'app :
@@ -37,7 +38,11 @@ export function useActiveBox(): BoxPublic {
 
 export function useBrand(): Palette {
   const { box } = useBox();
-  return useMemo(() => makePalette(box?.primary_color, box?.accent_color), [box?.primary_color, box?.accent_color]);
+  const { scheme } = useTheme();
+  return useMemo(
+    () => makePalette(box?.primary_color, box?.accent_color, scheme),
+    [box?.primary_color, box?.accent_color, scheme],
+  );
 }
 
 const fetchBox = () => supabase.rpc('box_public', { p_slug: BOX_SLUG });

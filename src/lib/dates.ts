@@ -56,6 +56,12 @@ export const dowShort = (s: string) => DOW_SHORT[isoDow(s) - 1];
 export const dowLong = (s: string) => DOW_LONG[isoDow(s) - 1];
 export const dayNum = (s: string) => parse(s).getDate();
 export const longDate = (s: string) => `${dowLong(s)} ${dayNum(s)} ${MONTHS[parse(s).getMonth()]}`;
+export const mediumDate = (s: string) => `${dayNum(s)} ${MONTHS[parse(s).getMonth()]} ${parse(s).getFullYear()}`;
+
+export function yearsAgo(n: number, from = todayIso()): string {
+  const d = parse(from);
+  return iso(new Date(d.getFullYear() - n, d.getMonth(), d.getDate()));
+}
 export const monthTitle = (s: string) => `${MONTHS_TITLE[parse(s).getMonth()]} ${parse(s).getFullYear()}`;
 
 /** Premier jour du mois (YYYY-MM-DD). */

@@ -56,7 +56,7 @@ export default function SignInScreen() {
         hitSlop={8}
         onPress={() => router.push({ pathname: '/mot-de-passe-oublie', params: { email: email.trim() } })}
         style={styles.forgot}>
-        <Text style={[styles.forgotText, { color: c.ink }]}>Mot de passe oublié ?</Text>
+        <Text style={[styles.forgotText, { color: c.link }]}>Mot de passe oublié ?</Text>
       </Pressable>
       <FormError message={error ?? linkError} />
       <Button label="Se connecter" onPress={submit} busy={busy} disabled={!email.trim() || !password} />

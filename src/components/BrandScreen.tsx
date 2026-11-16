@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import type { ReactNode } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,6 +15,7 @@ export function BrandScreen({ title, subtitle, children }: { title: string; subt
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: c.primary }]}>
+      <StatusBar style={c.onPrimary === '#FFFFFF' ? 'light' : 'dark'} />
       <ScrollView
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"

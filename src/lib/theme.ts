@@ -51,9 +51,20 @@ export function mix(hex: string, other: string, t: number): string {
   );
 }
 
-export function tint(hex: string, amount: number): string {
-  if (!isHex(hex)) return "#F7F7F7";
-  return mix(hex, "#FFFFFF", amount);
+/** Mélange `hex` vers `toward` (blanc par défaut, fond du thème en sombre). */
+export function tint(hex: string, amount: number, toward = "#FFFFFF"): string {
+  if (!isHex(hex)) return toward;
+  return mix(hex, toward, amount);
+}
+
+/** Assombrit ou éclaircit jusqu’à un contraste lisible sur `background`. */
+function readableOn(color: string, background: string): string {
+  let out = isHex(color) ? color : "#111111";
+  const toward = luminance(background) > 0.4 ? "#000000" : "#FFFFFF";
+  for (let i = 0; i < 16 && contrast(out, background) < 4.5; i++) {
+    out = mix(out, toward, 0.18);
+  }
+  return out;
 }
 
 export const Spacing = {
@@ -135,7 +146,35 @@ export interface Palette {
   muted: string;
   border: string;
   danger: string;
+  /** Lien de marque, lisible sur le fond. */
+  link: string;
 }
+
+export type Scheme = "light" | "dark";
+
+const LIGHT_SURFACES = {
+  background: "#F7F7F7",
+  surface: "#FFFFFF",
+  raised: "#F7F7F7",
+  neutral: "#F0F0EF",
+  text: "#2C2C2B",
+  secondary: "#808080",
+  muted: "#808080",
+  border: "#E4E4E3",
+  danger: "#B91C1C",
+} as const;
+
+const DARK_SURFACES = {
+  background: "#121418",
+  surface: "#1C1F26",
+  raised: "#262A33",
+  neutral: "#2A2E36",
+  text: "#F3F3F2",
+  secondary: "#A1A1A6",
+  muted: "#8E8E93",
+  border: "#343844",
+  danger: "#F07167",
+} as const;
 
 export function kindColor(kind: BlockKind, custom?: KindColors | null): string {
   const c = custom?.[kind];
@@ -145,12 +184,14 @@ export function kindColor(kind: BlockKind, custom?: KindColors | null): string {
 export function makePalette(
   primary = BRAND_FALLBACK.primary,
   accent = BRAND_FALLBACK.accent,
+  scheme: Scheme = "light",
 ): Palette {
   const p = isHex(primary) ? primary : BRAND_FALLBACK.primary;
   const a = isHex(accent) ? accent : BRAND_FALLBACK.accent;
   const onPrimary = onColor(p);
   let ink = p;
   while (contrast(ink, "#FFFFFF") < 4.5) ink = mix(ink, "#000000", 0.15);
+  const surfaces = scheme === "dark" ? DARK_SURFACES : LIGHT_SURFACES;
   return {
     primary: p,
     onPrimary,
@@ -158,15 +199,8 @@ export function makePalette(
     accent: a,
     onAccent: onColor(a),
     ink,
-    background: "#F7F7F7",
-    surface: "#FFFFFF",
-    raised: "#F7F7F7",
-    neutral: "#F0F0EF",
-    text: "#2C2C2B",
-    secondary: "#808080",
-    muted: "#808080",
-    border: "#E4E4E3",
-    danger: "#B91C1C",
+    ...surfaces,
+    link: scheme === "dark" ? readableOn(a, surfaces.background) : ink,
   };
 }
 

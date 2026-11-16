@@ -10,7 +10,7 @@ export default function NotFoundScreen() {
       <Stack.Screen options={{ title: 'Introuvable', headerShown: true }} />
       <View style={[styles.container, { backgroundColor: c.background }]}>
         <Text style={[styles.title, { color: c.text }]}>Cet écran n’existe pas.</Text>
-        <Link href="/" style={[styles.link, { color: c.ink }]}>
+        <Link href="/" style={[styles.link, { color: c.link }]}>
           Retour à l’accueil
         </Link>
       </View>

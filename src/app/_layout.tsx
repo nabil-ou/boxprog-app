@@ -8,17 +8,19 @@ import {
   DMSans_600SemiBold,
   useFonts,
 } from '@expo-google-fonts/dm-sans';
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationTheme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useMemo, useRef } from 'react';
-import { ActivityIndicator, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Text, TextInput, View } from 'react-native';
 import 'react-native-reanimated';
 
+import { BRAND_FALLBACK } from '@/config/box';
 import { font } from '@/lib/theme';
 import { AuthProvider, useAuth } from '@/providers/AuthProvider';
 import { BoxProvider, useBox, useBrand } from '@/providers/BoxProvider';
+import { ThemeProvider, useTheme } from '@/providers/ThemeProvider';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -50,34 +52,46 @@ export default function RootLayout() {
     I.defaultProps = { ...(I.defaultProps || {}), style: [I.defaultProps?.style, inputDefaults] };
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F6' }}>
-        <ActivityIndicator color="#171717" />
-      </View>
-    );
-  }
-
   return (
-    <AuthProvider>
-      <BoxProvider>
-        <RootStack />
-      </BoxProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      {fontsLoaded ? (
+        <AuthProvider>
+          <BoxProvider>
+            <RootStack />
+          </BoxProvider>
+        </AuthProvider>
+      ) : (
+        <BootSplash />
+      )}
+    </ThemeProvider>
+  );
+}
+
+function BootSplash() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: BRAND_FALLBACK.primary }}>
+      <Image
+        source={require('../../assets/images/splash-icon.png')}
+        style={{ width: 180, height: 180 }}
+        resizeMode="contain"
+      />
+    </View>
   );
 }
 
 function RootStack() {
   const { access } = useBox();
   const { recovering } = useAuth();
+  const { scheme } = useTheme();
   const c = useBrand();
   const booted = useRef(false);
+  const base = scheme === 'dark' ? DarkTheme : DefaultTheme;
 
   const theme = useMemo(
     () => ({
-      ...DefaultTheme,
+      ...base,
       colors: {
-        ...DefaultTheme.colors,
+        ...base.colors,
         primary: c.ink,
         background: c.background,
         card: c.surface,
@@ -92,7 +106,7 @@ function RootStack() {
         heavy: { fontFamily: font.semibold, fontWeight: '600' as const },
       },
     }),
-    [c],
+    [base, c],
   );
 
   useEffect(() => {
@@ -105,6 +119,7 @@ function RootStack() {
   if (access === 'loading') {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.primary }}>
+        <StatusBar style={c.onPrimary === '#FFFFFF' ? 'light' : 'dark'} />
         <ActivityIndicator color={c.onPrimary} />
       </View>
     );
@@ -113,8 +128,8 @@ function RootStack() {
   const waiting = access === 'pending' || access === 'blocked' || access === 'unavailable' || access === 'error';
 
   return (
-    <ThemeProvider value={theme}>
-      <StatusBar style="dark" />
+    <NavigationTheme value={theme}>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={recovering}>
           <Stack.Screen name="nouveau-mot-de-passe" />
@@ -131,17 +146,6 @@ function RootStack() {
         <Stack.Protected guard={!recovering && access === 'active'}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
-            name="profil"
-            options={{
-              presentation: 'modal',
-              headerShown: true,
-              title: 'Mon profil',
-              headerStyle: { backgroundColor: c.surface },
-              headerTintColor: c.text,
-              headerShadowVisible: false,
-            }}
-          />
-          <Stack.Screen
             name="scores/[blockId]"
             options={{
               headerShown: true,
@@ -154,6 +158,6 @@ function RootStack() {
           />
         </Stack.Protected>
       </Stack>
-    </ThemeProvider>
+    </NavigationTheme>
   );
 }

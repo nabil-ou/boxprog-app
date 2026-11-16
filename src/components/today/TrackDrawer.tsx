@@ -52,7 +52,7 @@ export function TrackDrawer({
                   style={({ pressed }) => [
                     styles.row,
                     {
-                      backgroundColor: active ? tint(c.primary, 0.92) : pressed ? c.raised : 'transparent',
+                      backgroundColor: active ? tint(c.primary, 0.92, c.background) : pressed ? c.raised : 'transparent',
                       opacity: pressed ? 0.9 : 1,
                     },
                   ]}>

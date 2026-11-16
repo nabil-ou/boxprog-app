@@ -111,12 +111,11 @@ export function BlockCard({
   }));
 
   const tipInk = c.primary;
-  const copy = "#3A3A39";
-  const tipWash = tint(c.primary, 0.92);
-  const tipBorder = tint(c.primary, 0.78);
-  const tipIconBg = tint(c.primary, 0.82);
-  const editFill = tint(c.accent, 0.88);
-  const editBorder = tint(c.accent, 0.55);
+  const tipWash = tint(c.primary, 0.92, c.background);
+  const tipBorder = tint(c.primary, 0.78, c.background);
+  const tipIconBg = tint(c.primary, 0.82, c.background);
+  const editFill = tint(c.accent, 0.88, c.background);
+  const editBorder = tint(c.accent, 0.55, c.background);
 
   return (
     <View
@@ -133,7 +132,7 @@ export function BlockCard({
           </Text>
           {subtitle ? (
             <View style={styles.metaRow}>
-              <Text style={[styles.meta, { color: copy, flex: 1 }]}>{subtitle}</Text>
+              <Text style={[styles.meta, { color: c.text, flex: 1 }]}>{subtitle}</Text>
               {block.timer_format ? (
                 <Pressable
                   accessibilityRole="button"
@@ -167,7 +166,7 @@ export function BlockCard({
           </View>
         ) : null}
         {body ? (
-          <Text style={[styles.body, { color: copy }]}>{body}</Text>
+          <Text style={[styles.body, { color: c.text }]}>{body}</Text>
         ) : null}
 
         {block.tip ? (
@@ -188,7 +187,7 @@ export function BlockCard({
               <View style={[styles.tipIcon, { backgroundColor: tipIconBg }]}>
                 <AppIcon icon={Lightbulb} size={13} color={tipInk} />
               </View>
-              <Text style={[styles.tipLabel, { color: copy }]}>
+              <Text style={[styles.tipLabel, { color: c.text }]}>
                 Coach tip
               </Text>
               <Animated.View style={chevronStyle}>
@@ -203,12 +202,12 @@ export function BlockCard({
                   tipHeight.value = e.nativeEvent.layout.height;
                 }}
               >
-                <Text style={[styles.tipBody, { color: copy }]}>
+                <Text style={[styles.tipBody, { color: c.text }]}>
                   {block.tip}
                 </Text>
               </View>
               <Animated.View style={tipBodyStyle}>
-                <Text style={[styles.tipBody, { color: copy }]}>
+                <Text style={[styles.tipBody, { color: c.text }]}>
                   {block.tip}
                 </Text>
               </Animated.View>
@@ -380,7 +379,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     paddingLeft: 30,
     paddingTop: Spacing.XS,
-    color: '#3A3A39',
   },
   actions: {
     flexDirection: "row",
