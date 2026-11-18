@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Calendar, ChevronRight } from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { AppIcon } from '@/components/AppIcon';
@@ -39,9 +39,11 @@ export function ReservationsSection() {
     }
   }, [box, access]);
 
-  useEffect(() => {
-    void reload();
-  }, [reload]);
+  useFocusEffect(
+    useCallback(() => {
+      void reload();
+    }, [reload]),
+  );
 
   const cards = useMemo(() => sessions.map(reservationFromSession), [sessions]);
   const selected = sessions.find((s) => `${s.id}-${s.day}` === selectedId) ?? null;

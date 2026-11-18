@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { AppDrawer } from '@/components/AppDrawer';
 import { BlockCard } from '@/components/today/BlockCard';
 import { BlockSheet } from '@/components/today/BlockSheet';
+import { LevelChips } from '@/components/today/LevelChips';
 import { TodayHeader } from '@/components/today/TodayHeader';
 import { useFeedbacks } from '@/hooks/useFeedbacks';
 import { useScoreSummary } from '@/hooks/useScoreSummary';
@@ -12,7 +13,7 @@ import { readStoredTrackId, storeTrackId, useTracks } from '@/hooks/useTracks';
 import { useWeek } from '@/hooks/useWeek';
 import { mondayOf, todayIso } from '@/lib/dates';
 import { Spacing, textStyles } from '@/lib/theme';
-import { feedbackOn, type Block, type Track } from '@/lib/types';
+import { feedbackOn, type Block, type Level, type Track } from '@/lib/types';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
 function resolveTrack(tracks: Track[] | null, selectedId: string | null, boxId: string): Track | null {
@@ -30,6 +31,7 @@ export default function WodScreen() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
   const [sheetBlock, setSheetBlock] = useState<Block | null>(null);
+  const [displayLevel, setDisplayLevel] = useState<Level>(box.my_level ?? 'RX');
 
   const monday = mondayOf(day);
   const { tracks } = useTracks(box.id);
@@ -37,7 +39,10 @@ export default function WodScreen() {
   const trackId = track?.id ?? null;
   const { days: week, loading, error } = useWeek(box.id, monday, trackId);
   const blocks = useMemo(() => week?.find((d) => d.day === day)?.blocks ?? [], [week, day]);
-  const level = box.my_level ?? 'RX';
+
+  useEffect(() => {
+    setDisplayLevel(box.my_level ?? 'RX');
+  }, [box.my_level]);
 
   const scoreIds = useMemo(() => blocks.filter((b) => b.score_type).map((b) => b.id), [blocks]);
   const feedbackKinds = box.feedback_kinds;
@@ -60,6 +65,8 @@ export default function WodScreen() {
     feedbacks.reload();
   };
 
+  const showLevelChips = !!tracks && !error && !(loading && !week);
+
   return (
     <View style={[styles.root, { backgroundColor: c.background }]}>
       <TodayHeader
@@ -69,6 +76,12 @@ export default function WodScreen() {
         onDayChange={setDay}
         onOpenMenu={() => setDrawerOpen(true)}
       />
+
+      {showLevelChips ? (
+        <View style={[styles.levelBar, { backgroundColor: c.background }]}>
+          <LevelChips value={displayLevel} onChange={setDisplayLevel} />
+        </View>
+      ) : null}
 
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         {!tracks || (loading && !week) ? (
@@ -82,7 +95,7 @@ export default function WodScreen() {
             <BlockCard
               key={b.id}
               block={b}
-              level={level}
+              level={displayLevel}
               kindColors={box.kind_colors}
               box={box}
               myScore={scores.mine.get(b.id)}
@@ -108,7 +121,7 @@ export default function WodScreen() {
           key={sheetBlock.id}
           block={sheetBlock}
           myFeedback={feedbacks.mine.get(sheetBlock.id)}
-          memberLevel={level}
+          memberLevel={displayLevel}
           onClose={closeSheet}
         />
       ) : null}
@@ -119,6 +132,11 @@ export default function WodScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+  },
+  levelBar: {
+    paddingHorizontal: Spacing.M,
+    paddingTop: Spacing.S,
+    paddingBottom: Spacing.XS,
   },
   body: {
     padding: Spacing.M,

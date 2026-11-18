@@ -10,7 +10,7 @@ import { SessionSlotRow } from '@/components/booking/SessionSlotRow';
 import { SessionTypeChips } from '@/components/booking/SessionTypeChips';
 import { PrimaryHeader } from '@/components/PrimaryHeader';
 import { DateScroller } from '@/components/today/DateScroller';
-import { bookClass, cancelClass, loadSessions, type Session } from '@/lib/booking';
+import { bookClass, cancelClass, isSessionUpcoming, loadSessions, type Session } from '@/lib/booking';
 import { longDate, todayIso } from '@/lib/dates';
 import { errMsg } from '@/lib/supabase';
 import { BorderRadius, FontSize, FontWeight, Spacing, font, textStyles } from '@/lib/theme';
@@ -52,16 +52,21 @@ export default function BookSessionScreen() {
     void reload();
   }, [reload]);
 
+  const upcoming = useMemo(
+    () => sessions.filter((s) => isSessionUpcoming(s.day, s.start)),
+    [sessions],
+  );
+
   useEffect(() => {
-    if (type !== 'all' && !sessions.some((s) => s.type === type)) setType('all');
-  }, [sessions, type]);
+    if (type !== 'all' && !upcoming.some((s) => s.type === type)) setType('all');
+  }, [upcoming, type]);
 
   const filters = useMemo(() => {
-    const names = [...new Set(sessions.map((s) => s.type))];
+    const names = [...new Set(upcoming.map((s) => s.type))];
     return [{ value: 'all', label: 'Tous' }, ...names.map((name) => ({ value: name, label: name }))];
-  }, [sessions]);
+  }, [upcoming]);
 
-  const shown = type === 'all' ? sessions : sessions.filter((s) => s.type === type);
+  const shown = type === 'all' ? upcoming : upcoming.filter((s) => s.type === type);
   const dayLabel = day === today ? 'Aujourd’hui' : longDate(day);
   const open = selected ? shown.find((s) => s.id === selected.id && s.day === selected.day) ?? selected : null;
 

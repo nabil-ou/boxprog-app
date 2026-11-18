@@ -1,3 +1,4 @@
+import { pad, todayIso } from '@/lib/dates';
 import { supabase } from '@/lib/supabase';
 
 export type SessionStatus = 'available' | 'full' | 'booked' | 'waitlist';
@@ -40,6 +41,15 @@ export function sessionDurationMin(start: string, end: string): number {
   const [sh, sm] = start.split(':').map(Number);
   const [eh, em] = end.split(':').map(Number);
   return eh * 60 + em - (sh * 60 + sm);
+}
+
+/** True si le créneau n’a pas encore commencé (jours futurs inclus). */
+export function isSessionUpcoming(day: string, start: string, now = new Date()): boolean {
+  const today = todayIso();
+  if (day > today) return true;
+  if (day < today) return false;
+  const nowHm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  return start >= nowHm;
 }
 
 function toSession(r: SessionRow): Session {
