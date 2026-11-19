@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "Blue Monkey",
-    "slug": "boxprog-cf-test",
+    "name": "Blue Monkey Fitness",
+    "slug": "boxprog-blue-monkey-fitness",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "cftest",
+    "scheme": "blue-monkey-fitness",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.boxprog.cftest",
+      "bundleIdentifier": "app.boxprog.bluemonkey",
       "appleTeamId": "7N99A2P4JG",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
@@ -17,7 +17,7 @@
       }
     },
     "android": {
-      "package": "app.boxprog.cftest",
+      "package": "app.boxprog.bluemonkey",
       "adaptiveIcon": {
         "backgroundColor": "#000000",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
