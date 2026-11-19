@@ -14,15 +14,21 @@ import { useWeek } from '@/hooks/useWeek';
 import { mondayOf, todayIso } from '@/lib/dates';
 import { Spacing, textStyles } from '@/lib/theme';
 import { feedbackOn, type Block, type Level, type Track } from '@/lib/types';
+import { useAuth } from '@/providers/AuthProvider';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
 function resolveTrack(tracks: Track[] | null, selectedId: string | null, boxId: string): Track | null {
   if (!tracks?.length) return null;
-  const preferred = selectedId ?? readStoredTrackId(boxId);
-  return tracks.find((t) => t.id === preferred) ?? tracks.find((t) => t.is_default) ?? tracks[0];
+  const chosen = selectedId ? tracks.find((t) => t.id === selectedId) : undefined;
+  if (chosen) return chosen;
+  const personal = tracks.find((t) => t.member_id);
+  if (personal) return personal;
+  const stored = readStoredTrackId(boxId);
+  return tracks.find((t) => t.id === stored) ?? tracks.find((t) => t.is_default) ?? tracks[0];
 }
 
 export default function WodScreen() {
+  const { session } = useAuth();
   const box = useActiveBox();
   const c = useBrand();
   const t = textStyles(c);
@@ -34,7 +40,7 @@ export default function WodScreen() {
   const [displayLevel, setDisplayLevel] = useState<Level>(box.my_level ?? 'RX');
 
   const monday = mondayOf(day);
-  const { tracks } = useTracks(box.id);
+  const { tracks } = useTracks(box.id, session?.user.id);
   const track = resolveTrack(tracks, selectedTrackId, box.id);
   const trackId = track?.id ?? null;
   const { days: week, loading, error } = useWeek(box.id, monday, trackId);

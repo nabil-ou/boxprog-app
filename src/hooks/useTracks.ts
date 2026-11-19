@@ -3,19 +3,20 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Track } from '@/lib/types';
 
-/** Pistes publiques de la box (WOD, Haltéro, Hyrox…), sans les programmes perso. */
-export function useTracks(boxId: string) {
+/** Pistes collectives de la box, plus la programmation perso de l'adhérent connecté. */
+export function useTracks(boxId: string, userId?: string | null) {
   const [tracks, setTracks] = useState<Track[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const { data, error } = await supabase
+    let query = supabase
       .from('tracks')
       .select('id, name, color, is_default, position, member_id, cycle_mode')
-      .eq('box_id', boxId)
-      .is('member_id', null)
-      .order('position')
-      .order('name');
+      .eq('box_id', boxId);
+    query = userId
+      ? query.or(`member_id.is.null,member_id.eq.${userId}`)
+      : query.is('member_id', null);
+    const { data, error } = await query.order('position').order('name');
     if (error) {
       setError(error.message);
       setTracks(null);
@@ -23,7 +24,7 @@ export function useTracks(boxId: string) {
     }
     setError(null);
     setTracks(data as Track[]);
-  }, [boxId]);
+  }, [boxId, userId]);
 
   useEffect(() => {
     setTracks(null);
