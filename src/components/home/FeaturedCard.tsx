@@ -1,28 +1,39 @@
+import { router } from 'expo-router';
 import { ArrowRight } from 'lucide-react-native';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppIcon } from '@/components/AppIcon';
-import type { MockFeatured } from '@/components/home/mock';
+import type { FeaturedCommunication } from '@/lib/communications';
 import { BorderRadius, FontSize, FontWeight, Spacing, font, softShadow } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 
-export function FeaturedCard({ item, onPress }: { item: MockFeatured; onPress?: () => void }) {
+export function FeaturedCard({ item }: { item: FeaturedCommunication }) {
   const c = useBrand();
+  const onImage = item.coverUrl ? '#FFFFFF' : c.onPrimary;
+  const open = () => router.push(`/communications/${item.id}`);
 
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={onPress}
+      onPress={open}
       style={({ pressed }) => [
         styles.card,
         softShadow,
         { backgroundColor: c.surface, borderColor: c.border, opacity: pressed ? 0.94 : 1 },
       ]}>
       <View style={[styles.image, { backgroundColor: c.primary }]}>
-        <View style={[styles.badge, { backgroundColor: 'rgba(0,0,0,0.45)' }]}>
-          <Text style={[styles.badgeText, { color: '#FFFFFF' }]}>{item.category}</Text>
-        </View>
-        <Text style={[styles.imageTitle, { color: c.onPrimary }]} numberOfLines={2}>
+        {item.coverUrl ? (
+          <Image source={{ uri: item.coverUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+        ) : null}
+        {item.coverUrl ? <View style={styles.scrim} /> : null}
+        {item.badge ? (
+          <View style={[styles.badge, { backgroundColor: 'rgba(0,0,0,0.45)' }]}>
+            <Text style={[styles.badgeText, { color: '#FFFFFF' }]}>{item.badge}</Text>
+          </View>
+        ) : (
+          <View />
+        )}
+        <Text style={[styles.imageTitle, { color: onImage }]} numberOfLines={2}>
           {item.title}
         </Text>
       </View>
@@ -32,7 +43,7 @@ export function FeaturedCard({ item, onPress }: { item: MockFeatured; onPress?: 
           {item.dateLabel} · {item.author}
         </Text>
         <Text style={[styles.title, { color: c.text }]}>{item.title}</Text>
-        <Text style={[styles.excerpt, { color: c.muted }]}>{item.excerpt}</Text>
+        {item.excerpt ? <Text style={[styles.excerpt, { color: c.muted }]}>{item.excerpt}</Text> : null}
         <View style={styles.readRow}>
           <Text style={[styles.read, { color: c.primary }]}>Lire l’article</Text>
           <AppIcon icon={ArrowRight} size={14} color={c.primary} />
@@ -52,6 +63,10 @@ const styles = StyleSheet.create({
     height: 140,
     padding: Spacing.M,
     justifyContent: 'space-between',
+  },
+  scrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.28)',
   },
   badge: {
     alignSelf: 'flex-start',

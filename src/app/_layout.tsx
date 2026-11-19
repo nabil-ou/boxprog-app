@@ -145,6 +145,7 @@ function RootStack() {
         </Stack.Protected>
         <Stack.Protected guard={!recovering && access === 'active'}>
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="communications" />
           <Stack.Screen
             name="scores/[blockId]"
             options={{

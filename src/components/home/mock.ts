@@ -12,15 +12,6 @@ export type MockReservation = {
   dateLabel: string;
 };
 
-export type MockFeatured = {
-  id: string;
-  category: string;
-  dateLabel: string;
-  author: string;
-  title: string;
-  excerpt: string;
-};
-
 function dayTag(day: string, today = todayIso()): string {
   if (day === today) return 'AUJOURD’HUI';
   if (day === addDays(today, 1)) return 'DEMAIN';
@@ -49,22 +40,3 @@ export function reservationFromSession(session: Session): MockReservation {
     dateLabel: shortDateLabel(session.day),
   };
 }
-
-export const MOCK_FEATURED: MockFeatured[] = [
-  {
-    id: 'f1',
-    category: 'PROGRAMMATION',
-    dateLabel: '13 octobre 2026',
-    author: 'L’équipe Blue Monkey',
-    title: 'Cycle 2 : Build & Transfer',
-    excerpt: 'Découvre les objectifs du nouveau cycle.',
-  },
-  {
-    id: 'f2',
-    category: 'ÉVÉNEMENT',
-    dateLabel: '20 octobre 2026',
-    author: 'L’équipe Blue Monkey',
-    title: 'Le prochain rendez-vous de la box',
-    excerpt: 'Inscris-toi pour la prochaine compétition interne.',
-  },
-];

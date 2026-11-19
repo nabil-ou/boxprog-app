@@ -90,6 +90,18 @@ export const FEEDBACK_MAX = 1000;
 export const feedbackOn = (b: Pick<Block, 'kind' | 'feedback'>, box: Pick<BoxPublic, 'feedback_kinds'>) =>
   b.feedback ?? (box.feedback_kinds || []).includes(b.kind);
 
+export interface Communication {
+  id: string;
+  box_id: string;
+  title: string;
+  body: string;
+  cover_url: string | null;
+  happens_on: string | null;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ScoreRow {
   id: string;
   block_id: string;
