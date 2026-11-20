@@ -13,8 +13,11 @@
     },
     "production": {
       "autoIncrement": true,
+      "environment": "production",
       "env": {
-        "EXPO_PUBLIC_BOX_SLUG": "blue-monkey-fitness"
+        "EXPO_PUBLIC_BOX_SLUG": "blue-monkey-fitness",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ajywvlifwdluqvvlwzqc.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_GHBnUF6xgWqBiHpaunbFTw_IRHIN7xg"
       }
     }
   },
