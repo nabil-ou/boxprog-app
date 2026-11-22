@@ -20,6 +20,8 @@ import { Button } from '@/components/Button';
 import { FormError } from '@/components/FormError';
 import { PrimaryHeader } from '@/components/PrimaryHeader';
 import { AthleteSheet } from '@/components/profile/AthleteSheet';
+import { BadgesPreview } from '@/components/profile/BadgesPreview';
+import { ObjectivesSection } from '@/components/profile/ObjectivesSection';
 import {
   ageYears,
   formatAge,
@@ -243,6 +245,9 @@ export default function ProfileScreen() {
             </Pressable>
 
             <Button label="Modifier ma fiche" variant="outline" onPress={() => setEditing(true)} />
+
+            <BadgesPreview />
+            <ObjectivesSection />
           </>
         ) : null}
       </ScrollView>

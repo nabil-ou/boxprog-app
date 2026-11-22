@@ -16,6 +16,7 @@ export default function ProfileLayout() {
       <Stack.Screen name="reglages" />
       <Stack.Screen name="mot-de-passe" />
       <Stack.Screen name="supprimer" />
+      <Stack.Screen name="badges" />
     </Stack>
   );
 }

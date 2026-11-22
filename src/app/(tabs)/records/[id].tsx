@@ -5,9 +5,17 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '@/components/AppIcon';
+import { BadgeUnlockModal } from '@/components/profile/BadgeUnlockModal';
 import { PrAddSheet } from '@/components/records/PrAddSheet';
 import { PrPercentages } from '@/components/records/PrPercentages';
 import { PrProgressChart } from '@/components/records/PrProgressChart';
+import {
+  getBadge,
+  higherIsBetter,
+  unlockFromPr,
+  type BadgeDef,
+  type BadgeUnlock,
+} from '@/lib/badges';
 import {
   entriesFor,
   formatPrDate,
@@ -30,13 +38,16 @@ import { useBrand } from '@/providers/BoxProvider';
 
 type Tab = 'progression' | 'percentages';
 
+type Celebration = { badge: BadgeDef; unlock: BadgeUnlock };
+
 export default function MovementDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const c = useBrand();
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState<Tab>('progression');
   const [editing, setEditing] = useState<PersonalRecord | null | undefined>(undefined);
-  const { rows, add, update } = usePersonalRecords();
+  const [celebration, setCelebration] = useState<Celebration | null>(null);
+  const { rows, add, update, bestByMovement } = usePersonalRecords();
   const sheetOpen = editing !== undefined;
 
   const movement = useMemo(() => (id ? getMovement(id) : undefined), [id]);
@@ -204,22 +215,47 @@ export default function MovementDetailScreen() {
           movement={movement}
           initial={editing}
           onClose={closeSheet}
-          onSave={(input) => {
-            if (editing) {
-              return update({
-                id: editing.id,
-                value: input.value,
-                note: input.note,
-                performedOn: input.performedOn,
-              });
+          onSave={async (input) => {
+            const previousBest = bestByMovement[movement.id] ?? 0;
+            const err = editing
+              ? await update({
+                  id: editing.id,
+                  value: input.value,
+                  note: input.note,
+                  performedOn: input.performedOn,
+                })
+              : await add({
+                  movementId: movement.id,
+                  value: input.value,
+                  note: input.note,
+                  performedOn: input.performedOn,
+                });
+            if (err) return err;
+
+            const badge = getBadge(movement.id);
+            if (badge) {
+              const nextBest =
+                previousBest <= 0
+                  ? input.value
+                  : higherIsBetter(movement.unit)
+                    ? Math.max(previousBest, input.value)
+                    : Math.min(previousBest, input.value);
+              const unlock = unlockFromPr(previousBest, nextBest, badge.tiers, badge.unit);
+              if (unlock) {
+                // Après la fermeture animée du sheet (~220 ms) pour éviter 2 Modals empilées.
+                setTimeout(() => setCelebration({ badge, unlock }), 280);
+              }
             }
-            return add({
-              movementId: movement.id,
-              value: input.value,
-              note: input.note,
-              performedOn: input.performedOn,
-            });
+            return null;
           }}
+        />
+      ) : null}
+
+      {celebration ? (
+        <BadgeUnlockModal
+          badge={celebration.badge}
+          unlock={celebration.unlock}
+          onClose={() => setCelebration(null)}
         />
       ) : null}
     </View>
