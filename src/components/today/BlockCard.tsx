@@ -21,6 +21,7 @@ import Animated, {
 
 import { AppIcon } from "@/components/AppIcon";
 import { mapBlockToSetup, setupParamsToQuery } from "@/lib/chrono/mapBlock";
+import { resolvePrShortcodes } from "@/lib/records";
 import { blockSubtitle, blockTitle, levelText } from "@/lib/scoring";
 import {
   BorderRadius,
@@ -42,6 +43,7 @@ import {
   type Level,
 } from "@/lib/types";
 import { useBrand } from "@/providers/BoxProvider";
+import { usePersonalRecords } from "@/providers/RecordsProvider";
 
 const EASE_OUT = Easing.bezier(0.23, 1, 0.32, 1);
 const TIP_MS = 220;
@@ -71,7 +73,9 @@ export function BlockCard({
   const reduced = useReducedMotion();
   const [tipOpen, setTipOpen] = useState(false);
   const subtitle = blockSubtitle(block);
-  const body = levelText(block, level);
+  const { bestByMovement } = usePersonalRecords();
+  const body = resolvePrShortcodes(levelText(block, level), bestByMovement);
+  const tip = block.tip ? resolvePrShortcodes(block.tip, bestByMovement) : "";
   const kind = kindColor(block.kind, kindColors);
   const withFeedback = feedbackOn(block, box);
   const scored = Boolean(block.score_type);
@@ -203,12 +207,12 @@ export function BlockCard({
                 }}
               >
                 <Text style={[styles.tipBody, { color: c.text }]}>
-                  {block.tip}
+                  {tip}
                 </Text>
               </View>
               <Animated.View style={tipBodyStyle}>
                 <Text style={[styles.tipBody, { color: c.text }]}>
-                  {block.tip}
+                  {tip}
                 </Text>
               </Animated.View>
             </View>
