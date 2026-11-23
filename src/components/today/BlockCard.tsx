@@ -147,18 +147,18 @@ export function BlockCard({
                     if (!mapped) return;
                     router.push({
                       pathname: "/(tabs)/chrono/setup",
-                      params: setupParamsToQuery(mapped),
+                      params: { ...setupParamsToQuery(mapped), returnTo: "wod" },
                     });
                   }}
                   style={({ pressed }) => [
                     styles.timerBtn,
                     {
-                      backgroundColor: tipWash,
-                      borderColor: tipBorder,
+                      backgroundColor: tint(c.accent, 0.82, c.surface),
+                      borderColor: tint(c.accent, 0.5, c.surface),
                       opacity: pressed ? 0.85 : 1,
                     },
                   ]}>
-                  <AppIcon icon={Timer} size={16} color={tipInk} />
+                  <AppIcon icon={Timer} size={16} color={c.accent} />
                 </Pressable>
               ) : null}
             </View>

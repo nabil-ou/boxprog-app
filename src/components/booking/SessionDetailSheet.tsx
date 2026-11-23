@@ -242,7 +242,7 @@ export function SessionDetailSheet({
                   { borderColor: c.border, backgroundColor: c.raised, opacity: pressed ? 0.9 : 1 },
                 ]}>
                 <AppIcon icon={Dumbbell} size={18} color={c.primary} />
-                <Text style={[styles.wodLinkText, { color: c.text }]}>Voir le WOD de la séance</Text>
+                <Text style={[styles.wodLinkText, { color: c.text }]}>Voir le contenu de la séance</Text>
                 <AppIcon icon={ChevronRight} size={18} color={c.muted} />
               </Pressable>
             ) : null}

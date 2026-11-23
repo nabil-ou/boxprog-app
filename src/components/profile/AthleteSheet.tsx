@@ -18,7 +18,7 @@ import { AppIcon } from '@/components/AppIcon';
 import { Button } from '@/components/Button';
 import { Field } from '@/components/Field';
 import { FormError } from '@/components/FormError';
-import { DayPickerModal } from '@/components/today/DayPickerModal';
+import { BirthDatePicker } from '@/components/profile/BirthDatePicker';
 import {
   parseHeight,
   parseWeight,
@@ -206,7 +206,7 @@ export function AthleteSheet({
           </KeyboardAvoidingView>
         </Animated.View>
       </View>
-      <DayPickerModal
+      <BirthDatePicker
         open={dateOpen}
         value={birth || yearsAgo(25)}
         minDate={yearsAgo(100)}

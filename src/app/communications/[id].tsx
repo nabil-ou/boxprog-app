@@ -44,7 +44,8 @@ export default function CommunicationScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: c.background }]}>
-      <Stack.Screen options={{ title: item?.title ?? 'Communication' }} />
+      {/* Titre long déjà dans le corps : le header natif le tronque toujours. */}
+      <Stack.Screen options={{ title: '', headerTitle: () => null }} />
       {!item && !error ? (
         <ActivityIndicator color={c.primary} style={styles.spinner} />
       ) : error || !item ? (

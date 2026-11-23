@@ -59,7 +59,8 @@
           "enableRemoteNotifications": false
         }
       ],
-      "./plugins/withLocalNotificationsOnly.js"
+      "./plugins/withLocalNotificationsOnly.js",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true

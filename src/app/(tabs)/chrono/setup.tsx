@@ -25,7 +25,15 @@ export default function ChronoSetupScreen() {
     <View style={[styles.root, { backgroundColor: c.background }]}>
       <View style={[styles.header, { backgroundColor: c.primary, paddingTop: insets.top + Spacing.S }]}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => {
+            // Depuis un bloc WOD, le push cross-tab casse l’historique : revenir explicitement.
+            if (params.returnTo === 'wod') {
+              router.navigate('/(tabs)/wod');
+              return;
+            }
+            if (router.canGoBack()) router.back();
+            else router.replace('/(tabs)/chrono');
+          }}
           hitSlop={12}
           accessibilityLabel="Retour"
           style={styles.headerBtn}>
