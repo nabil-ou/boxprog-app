@@ -20,6 +20,7 @@ import { Button } from '@/components/Button';
 import { FormError } from '@/components/FormError';
 import { PrimaryHeader } from '@/components/PrimaryHeader';
 import { AthleteSheet } from '@/components/profile/AthleteSheet';
+import { SessionStatsCard } from '@/components/profile/SessionStatsCard';
 import {
   ageYears,
   formatAge,
@@ -243,6 +244,8 @@ export default function ProfileScreen() {
             </Pressable>
 
             <Button label="Modifier ma fiche" variant="outline" onPress={() => setEditing(true)} />
+
+            <SessionStatsCard boxId={box.id} />
           </>
         ) : null}
       </ScrollView>
