@@ -100,16 +100,7 @@ export function ChronoBuilder({
       b.rs = Math.min(600, Math.max(0, v + durationStep(ref) * dir));
     } else if (!meta.fixed) {
       const ref = dir > 0 ? b.v : b.v - 1;
-      const sp =
-        b.m === 'emom' || b.m === 'int' || b.m === 'tabata'
-          ? 1
-          : b.m === 'rest'
-            ? ref < 120
-              ? 15
-              : 30
-            : ref < 20
-              ? 1
-              : 5;
+      const sp = b.m === 'rest' ? (ref < 120 ? 15 : 30) : 1;
       b.v = Math.min(meta.max, Math.max(meta.min, b.v + sp * dir));
     }
     onMix(next);
