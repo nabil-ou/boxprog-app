@@ -16,9 +16,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '@/components/AppIcon';
 import { Button } from '@/components/Button';
+import { DatePickerSheet } from '@/components/DatePickerSheet';
 import { Field } from '@/components/Field';
 import { FormError } from '@/components/FormError';
-import { BirthDatePicker } from '@/components/profile/BirthDatePicker';
 import {
   parseHeight,
   parseWeight,
@@ -206,8 +206,9 @@ export function AthleteSheet({
           </KeyboardAvoidingView>
         </Animated.View>
       </View>
-      <BirthDatePicker
+      <DatePickerSheet
         open={dateOpen}
+        title="Date de naissance"
         value={birth || yearsAgo(25)}
         minDate={yearsAgo(100)}
         maxDate={todayIso()}

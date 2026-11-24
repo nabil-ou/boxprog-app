@@ -17,8 +17,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '@/components/AppIcon';
 import { Button } from '@/components/Button';
+import { DatePickerSheet } from '@/components/DatePickerSheet';
 import { Field } from '@/components/Field';
-import { DayPickerModal } from '@/components/today/DayPickerModal';
 import { todayIso } from '@/lib/dates';
 import {
   formatPrDate,
@@ -214,8 +214,9 @@ export function PrAddSheet({
         </Animated.View>
       </View>
 
-      <DayPickerModal
+      <DatePickerSheet
         open={dateOpen}
+        title="Date du PR"
         value={date}
         maxDate={todayIso()}
         onSelect={(day) => {

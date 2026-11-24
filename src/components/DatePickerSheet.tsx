@@ -9,8 +9,10 @@ import { BorderRadius, FontSize, FontWeight, Spacing, font } from '@/lib/theme';
 import { useBrand } from '@/providers/BoxProvider';
 import { useTheme } from '@/providers/ThemeProvider';
 
-export function BirthDatePicker({
+/** Choix d'une date : roues jour / mois / année sur iOS, dialogue système sur Android. */
+export function DatePickerSheet({
   open,
+  title,
   value,
   minDate = yearsAgo(100),
   maxDate = todayIso(),
@@ -18,7 +20,8 @@ export function BirthDatePicker({
   onClose,
 }: {
   open: boolean;
-  /** ISO yyyy-mm-dd, or empty → défaut 25 ans. */
+  title: string;
+  /** ISO yyyy-mm-dd */
   value: string;
   minDate?: string;
   maxDate?: string;
@@ -30,11 +33,10 @@ export function BirthDatePicker({
   const insets = useSafeAreaInsets();
   const minimumDate = useMemo(() => parse(minDate), [minDate]);
   const maximumDate = useMemo(() => parse(maxDate), [maxDate]);
-  const initial = useMemo(() => parse(value || yearsAgo(25)), [value]);
-  const [draft, setDraft] = useState(initial);
+  const [draft, setDraft] = useState(() => parse(value));
 
   useEffect(() => {
-    if (open) setDraft(parse(value || yearsAgo(25)));
+    if (open) setDraft(parse(value));
   }, [open, value]);
 
   const onChange = (event: DateTimePickerEvent, date?: Date) => {
@@ -82,7 +84,7 @@ export function BirthDatePicker({
               paddingBottom: Math.max(insets.bottom, Spacing.M),
             },
           ]}>
-          <Text style={[styles.title, { color: c.text }]}>Date de naissance</Text>
+          <Text style={[styles.title, { color: c.text }]}>{title}</Text>
           <DateTimePicker
             value={draft}
             mode="date"
