@@ -22,7 +22,7 @@ import {
 } from '@/lib/reminders';
 import { errMsg, supabase } from '@/lib/supabase';
 import { BorderRadius, FontSize, FontWeight, Spacing, font, softShadow } from '@/lib/theme';
-import { LEVELS, type Level } from '@/lib/types';
+import { boxLevel, boxLevels, type Level } from '@/lib/types';
 import { useAuth } from '@/providers/AuthProvider';
 import { useActiveBox, useBox, useBrand } from '@/providers/BoxProvider';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -41,7 +41,7 @@ export default function SettingsScreen() {
   const c = useBrand();
   const { preference, setPreference } = useTheme();
   const insets = useSafeAreaInsets();
-  const [level, setLevel] = useState<Level>(box.my_level ?? 'RX');
+  const [level, setLevel] = useState<Level>(boxLevel(box, box.my_level));
   const [sex, setSex] = useState<'F' | 'H' | ''>(box.my_sex ?? '');
   const [name, setName] = useState(box.my_display_name || '');
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +50,8 @@ export default function SettingsScreen() {
   const [reminderNote, setReminderNote] = useState<string | null>(null);
   const [blocked, setBlocked] = useState(false);
 
-  useEffect(() => setLevel(box.my_level ?? 'RX'), [box.my_level]);
+  const { my_level: myLevel, elite_level: eliteLevel } = box;
+  useEffect(() => setLevel(boxLevel({ elite_level: eliteLevel }, myLevel)), [myLevel, eliteLevel]);
   useEffect(() => setSex(box.my_sex ?? ''), [box.my_sex]);
   useEffect(() => setName(box.my_display_name || ''), [box.my_display_name]);
 
@@ -212,7 +213,7 @@ export default function SettingsScreen() {
           <View style={styles.block}>
             <Text style={[styles.label, { color: c.text }]}>Niveau par défaut</Text>
             <Text style={[styles.hint, { color: c.muted }]}>La séance du jour s’ouvrira à ce niveau.</Text>
-            <Segment options={LEVELS.map((l) => ({ value: l, label: l }))} value={level} onChange={chooseLevel} />
+            <Segment options={boxLevels(box).map((l) => ({ value: l, label: l }))} value={level} onChange={chooseLevel} />
           </View>
           <FormError message={error} />
         </Section>

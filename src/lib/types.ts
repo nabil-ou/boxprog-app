@@ -1,6 +1,6 @@
 export type Role = 'owner' | 'admin' | 'coach' | 'member';
 export type MemberStatus = 'active' | 'pending' | 'blocked';
-export type Level = 'RX' | 'Inter' | 'Scaled';
+export type Level = 'Elite' | 'RX' | 'Inter' | 'Scaled';
 export type TimerFormat = '' | 'amrap' | 'emom' | 'fortime' | 'tabata';
 export type ScoreType = '' | 'rounds' | 'time' | 'load';
 /** Type par défaut ou type personnalisé de la box. */
@@ -23,6 +23,8 @@ export interface BoxPublic {
   kind_colors: KindColors | null;
   custom_kinds: string[] | null;
   feedback_kinds?: string[] | null;
+  /** Niveau Elite proposé au-dessus de RX. Absent tant que la migration n'est pas appliquée. */
+  elite_level?: boolean;
   training_days: number[];
   status: BoxStatus;
   require_approval: boolean;
@@ -66,6 +68,8 @@ export interface Block {
   kind: BlockKind;
   timer_format: TimerFormat;
   minutes: number;
+  /** Absent tant que la migration n'est pas appliquée. */
+  elite?: string;
   rx: string;
   scaled: string;
   beginner: string;
@@ -113,6 +117,17 @@ export interface ScoreRow {
 }
 
 export const LEVELS: Level[] = ['RX', 'Inter', 'Scaled'];
+const ELITE_LEVELS: Level[] = ['Elite', ...LEVELS];
+
+/** Niveaux proposés par la box : Elite seulement si elle l'a activé. */
+export const boxLevels = (box: Pick<BoxPublic, 'elite_level'>) => (box.elite_level ? ELITE_LEVELS : LEVELS);
+/** Niveau tel que la box le connaît : Elite redevient RX quand la box n'a pas ce niveau. */
+export const boxLevel = (box: Pick<BoxPublic, 'elite_level'>, l: Level | null | undefined): Level =>
+  !l || (l === 'Elite' && !box.elite_level) ? 'RX' : l;
+
+/** Ces types sont identiques pour tous : un seul texte, stocké dans rx. */
+const SINGLE_LEVEL_KINDS = ['Warm-up', 'Mobilité', 'Force', 'Cool down'];
+export const singleLevelKind = (kind: string) => SINGLE_LEVEL_KINDS.includes(kind);
 
 /** Couleurs par défaut des types de blocs ; une box peut les remplacer (boxes.kind_colors). */
 export const KIND_COLORS: KindColors = {

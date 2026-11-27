@@ -1,5 +1,5 @@
 import { pad } from '@/lib/dates';
-import type { Block, Level, ScoreType, TimerFormat } from '@/lib/types';
+import { singleLevelKind, type Block, type Level, type ScoreType, type TimerFormat } from '@/lib/types';
 
 const FORMATS: Record<TimerFormat, string> = {
   '': 'Sans timer',
@@ -36,9 +36,11 @@ export function showScore(type: ScoreType, v: number): string {
 export const compareScores = (type: ScoreType) => (x: { value: number }, y: { value: number }) =>
   type === 'time' ? x.value - y.value : y.value - x.value;
 
-/** Inter → scaled, Scaled → beginner, RX → rx. */
-export function levelText(b: Pick<Block, 'rx' | 'scaled' | 'beginner'>, l: Level): string {
-  return (l === 'Inter' ? b.scaled : l === 'Scaled' ? b.beginner : b.rx) || b.rx;
+/** Elite → elite, Inter → scaled, Scaled → beginner, RX → rx. Un niveau vide retombe sur RX.
+ *  Warm-up, Mobilité, Force et Cool down n'ont qu'un texte, le même pour tous les niveaux. */
+export function levelText(b: Pick<Block, 'rx' | 'scaled' | 'beginner' | 'elite'> & { kind?: string }, l: Level): string {
+  if (b.kind && singleLevelKind(b.kind)) return b.rx;
+  return (l === 'Elite' ? b.elite : l === 'Inter' ? b.scaled : l === 'Scaled' ? b.beginner : b.rx) || b.rx;
 }
 
 export const blockTitle = (b: Block) => b.kind;

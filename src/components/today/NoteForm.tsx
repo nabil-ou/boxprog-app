@@ -9,9 +9,9 @@ import { fmtDateTime } from '@/lib/dates';
 import { decodeScore, encodeScore } from '@/lib/scoring';
 import { errMsg, supabase } from '@/lib/supabase';
 import { BorderRadius, FontSize, FontWeight, Spacing, font } from '@/lib/theme';
-import { FEEDBACK_MAX, type Block, type Feedback, type Level, type ScoreRow } from '@/lib/types';
+import { FEEDBACK_MAX, boxLevel, type Block, type Feedback, type Level, type ScoreRow } from '@/lib/types';
 import { useAuth } from '@/providers/AuthProvider';
-import { useBrand } from '@/providers/BoxProvider';
+import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
 export function NoteForm({
   block,
@@ -29,10 +29,12 @@ export function NoteForm({
   onSaved: (next: { score?: ScoreRow; feedback?: Feedback | null }) => void;
 }) {
   const c = useBrand();
+  const box = useActiveBox();
+  const eliteLevel = box.elite_level;
   const { session } = useAuth();
   const scored = Boolean(block.score_type);
   const t = block.score_type;
-  const [level, setLevel] = useState<Level>(mineScore?.level ?? initialLevel);
+  const [level, setLevel] = useState<Level>(boxLevel(box, mineScore?.level ?? initialLevel));
   const [a, setA] = useState('');
   const [b, setB] = useState('');
   const [body, setBody] = useState(mineFeedback?.body || '');
@@ -45,8 +47,8 @@ export function NoteForm({
     const [x, y] = decodeScore(t, mineScore.value);
     setA(String(x));
     setB(t === 'load' ? '' : String(y));
-    setLevel(mineScore.level);
-  }, [mineScore, t]);
+    setLevel(boxLevel({ elite_level: eliteLevel }, mineScore.level));
+  }, [mineScore, t, eliteLevel]);
 
   useEffect(() => {
     setFb(mineFeedback);

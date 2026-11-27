@@ -6,10 +6,10 @@ import { AppIcon } from '@/components/AppIcon';
 import { ChipGroup } from '@/components/Chip';
 import { compareScores, showScore } from '@/lib/scoring';
 import { BorderRadius, FontSize, FontWeight, Spacing, font, textStyles, tint } from '@/lib/theme';
-import type { Block, Level, ScoreRow } from '@/lib/types';
-import { useBrand } from '@/providers/BoxProvider';
+import { boxLevel, type Block, type Level, type ScoreRow } from '@/lib/types';
+import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
-const LEVEL_ORDER: Record<Level, number> = { RX: 0, Inter: 1, Scaled: 2 };
+const LEVEL_ORDER: Record<Level, number> = { Elite: 0, RX: 1, Inter: 2, Scaled: 3 };
 
 export function Leaderboard({
   block,
@@ -23,21 +23,24 @@ export function Leaderboard({
   onBump: (r: ScoreRow) => void;
 }) {
   const c = useBrand();
+  const eliteLevel = useActiveBox().elite_level;
   const t = textStyles(c);
   const [sex, setSex] = useState<'all' | 'F' | 'H'>('all');
   const scoreType = block.score_type;
   const list = useMemo(() => {
-    const filtered = (rows || []).filter((r) => sex === 'all' || r.membership?.sex === sex);
+    const filtered = (rows || [])
+      .filter((r) => sex === 'all' || r.membership?.sex === sex)
+      .map((r) => ({ ...r, level: boxLevel({ elite_level: eliteLevel }, r.level) }));
     const byScore = compareScores(scoreType);
-    return [...filtered].sort((a, b) => {
+    return filtered.sort((a, b) => {
       const byLevel = LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level];
       return byLevel || byScore(a, b);
     });
-  }, [rows, sex, scoreType]);
+  }, [rows, sex, scoreType, eliteLevel]);
 
   const ranks = useMemo(() => {
     const map = new Map<string, number>();
-    const count: Record<Level, number> = { RX: 0, Inter: 0, Scaled: 0 };
+    const count: Record<Level, number> = { Elite: 0, RX: 0, Inter: 0, Scaled: 0 };
     for (const r of list) {
       count[r.level] += 1;
       map.set(r.id, count[r.level]);

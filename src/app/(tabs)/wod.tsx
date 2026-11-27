@@ -13,7 +13,7 @@ import { readStoredTrackId, storeTrackId, useTracks } from '@/hooks/useTracks';
 import { useWeek } from '@/hooks/useWeek';
 import { mondayOf, todayIso } from '@/lib/dates';
 import { Spacing, textStyles } from '@/lib/theme';
-import { feedbackOn, type Block, type Level, type Track } from '@/lib/types';
+import { boxLevel, feedbackOn, type Block, type Level, type Track } from '@/lib/types';
 import { useAuth } from '@/providers/AuthProvider';
 import { useActiveBox, useBrand } from '@/providers/BoxProvider';
 
@@ -37,7 +37,8 @@ export default function WodScreen() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
   const [sheetBlock, setSheetBlock] = useState<Block | null>(null);
-  const [displayLevel, setDisplayLevel] = useState<Level>(box.my_level ?? 'RX');
+  const [displayLevel, setDisplayLevel] = useState<Level>(boxLevel(box, box.my_level));
+  const { my_level: myLevel, elite_level: eliteLevel } = box;
 
   const monday = mondayOf(day);
   const { tracks } = useTracks(box.id, session?.user.id);
@@ -47,8 +48,8 @@ export default function WodScreen() {
   const blocks = useMemo(() => week?.find((d) => d.day === day)?.blocks ?? [], [week, day]);
 
   useEffect(() => {
-    setDisplayLevel(box.my_level ?? 'RX');
-  }, [box.my_level]);
+    setDisplayLevel(boxLevel({ elite_level: eliteLevel }, myLevel));
+  }, [myLevel, eliteLevel]);
 
   const scoreIds = useMemo(() => blocks.filter((b) => b.score_type).map((b) => b.id), [blocks]);
   const feedbackKinds = box.feedback_kinds;
