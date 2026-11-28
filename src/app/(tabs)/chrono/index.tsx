@@ -5,7 +5,7 @@ import type { HomeFormat } from '@/lib/chrono/types';
 import { useChronoConfig } from '@/providers/ChronoProvider';
 
 export default function ChronoHomeScreen() {
-  const { openFormat, openEmpty } = useChronoConfig();
+  const { cfg, openFormat, openEmpty, openFavorite, deleteFavorite } = useChronoConfig();
 
   const goSetup = () => router.push('/(tabs)/chrono/setup');
 
@@ -19,11 +19,19 @@ export default function ChronoHomeScreen() {
     goSetup();
   };
 
+  const onOpenFavorite = (id: string) => {
+    openFavorite(id);
+    goSetup();
+  };
+
   return (
     <ModeHome
       onSelect={onSelect}
       onCreate={onCreate}
       onBack={() => router.back()}
+      favorites={cfg.favs}
+      onOpenFavorite={onOpenFavorite}
+      onDeleteFavorite={deleteFavorite}
     />
   );
 }

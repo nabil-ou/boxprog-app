@@ -1,14 +1,17 @@
+import * as Haptics from 'expo-haptics';
 import {
+  Check,
   ChevronRight,
   ChevronUp,
   Pencil,
   Play,
   Plus,
+  Star,
   Timer,
   Volume2,
   X,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import { APP_ICON_STROKE } from '@/components/AppIcon';
@@ -63,6 +66,10 @@ export function ChronoBuilder({
   onChange,
   onMix,
   onStart,
+  isFavorite,
+  isDirty,
+  onSaveFavorite,
+  onSaveAsNew,
 }: {
   cfg: ChronoConfig;
   sessionName: string;
@@ -70,11 +77,33 @@ export function ChronoBuilder({
   onChange: (partial: Partial<ChronoConfig>) => void;
   onMix: (mix: MixBlock[]) => void;
   onStart: () => void;
+  isFavorite: boolean;
+  /** Unsaved changes on the open favorite */
+  isDirty: boolean;
+  onSaveFavorite: () => void;
+  onSaveAsNew: () => void;
 }) {
   const c = useBrand();
   const [expanded, setExpanded] = useState<number | null>(0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [cdOpen, setCdOpen] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+  const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+    },
+    [],
+  );
+
+  const confirmSaved = (save: () => void) => {
+    save();
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    setJustSaved(true);
+    if (savedTimer.current) clearTimeout(savedTimer.current);
+    savedTimer.current = setTimeout(() => setJustSaved(false), 1600);
+  };
 
   const mix = cfg.mix;
   const total = mixTotalSeconds(mix);
@@ -350,6 +379,43 @@ export function ChronoBuilder({
         <Play size={16} color={c.onAccent} strokeWidth={APP_ICON_STROKE} fill={c.onAccent} />
         <Text style={[styles.ctaTxt, { color: c.onAccent }]}>{ctaLabel}</Text>
       </Pressable>
+
+      <Pressable
+        accessibilityRole="button"
+        disabled={!mix.length}
+        onPress={() => confirmSaved(onSaveFavorite)}
+        style={({ pressed }) => [
+          styles.favBtn,
+          {
+            borderColor: c.border,
+            backgroundColor: c.surface,
+            opacity: !mix.length ? 0.4 : pressed ? 0.8 : 1,
+          },
+        ]}>
+        {justSaved ? (
+          <Check size={16} color={c.accent} strokeWidth={APP_ICON_STROKE} />
+        ) : (
+          <Star
+            size={16}
+            color={c.accent}
+            strokeWidth={APP_ICON_STROKE}
+            fill={isFavorite ? c.accent : 'transparent'}
+          />
+        )}
+        <Text style={[styles.favTxt, { color: c.text }]}>
+          {justSaved ? 'Enregistré' : isFavorite ? 'Mettre à jour le favori' : 'Enregistrer en favori'}
+        </Text>
+      </Pressable>
+
+      {isFavorite && isDirty && mix.length > 0 ? (
+        <Pressable
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={() => confirmSaved(onSaveAsNew)}
+          style={({ pressed }) => [styles.saveAsNew, { opacity: pressed ? 0.6 : 1 }]}>
+          <Text style={[styles.saveAsNewTxt, { color: c.muted }]}>Enregistrer comme nouveau</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -539,5 +605,28 @@ const styles = StyleSheet.create({
     fontFamily: font.semibold,
     fontSize: FontSize.M,
     fontWeight: FontWeight.SEMI_BOLD,
+  },
+  favBtn: {
+    minHeight: Height.PRESSABLE_M,
+    borderRadius: BorderRadius.L,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: Spacing.XS,
+  },
+  favTxt: {
+    fontFamily: font.medium,
+    fontSize: FontSize.S,
+    fontWeight: FontWeight.MEDIUM,
+  },
+  saveAsNew: {
+    alignSelf: 'center',
+    paddingVertical: Spacing.XXS,
+  },
+  saveAsNewTxt: {
+    fontFamily: font.medium,
+    fontSize: FontSize.XS,
+    textDecorationLine: 'underline',
   },
 });

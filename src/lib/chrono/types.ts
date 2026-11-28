@@ -13,8 +13,12 @@ export interface MixBlock {
 }
 
 export interface MixFavorite {
+  id: string;
   name: string;
   mix: MixBlock[];
+  /** Countdown before start, seconds */
+  cd?: number;
+  updatedAt: number;
 }
 
 export interface ChronoConfig {

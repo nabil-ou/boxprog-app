@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
 import { DEFAULT_CONFIG, presetBlock } from '@/lib/chrono/defaults';
-import { loadConfig, saveConfig } from '@/lib/chrono/persist';
+import { loadConfig, newFavoriteId, saveConfig } from '@/lib/chrono/persist';
 import type { ChronoConfig, ChronoMode, HomeFormat, MixBlock, MixFavorite } from '@/lib/chrono/types';
 import { MODE_NAMES } from '@/lib/chrono/types';
 
@@ -16,6 +16,24 @@ interface ChronoState {
   openFormat: (format: HomeFormat) => void;
   openEmpty: () => void;
   applySetupParams: (params: Record<string, string | undefined>) => void;
+  activeFavId: string | null;
+  /** The open chrono differs from its saved favorite. */
+  favDirty: boolean;
+  openFavorite: (id: string) => void;
+  saveFavorite: (opts?: { asNew?: boolean }) => void;
+  deleteFavorite: (id: string) => void;
+}
+
+const DEFAULT_FAV_NAME = 'Mon chrono';
+
+function sameMix(a: MixBlock[], b: MixBlock[]): boolean {
+  return (
+    a.length === b.length &&
+    a.every((x, i) => {
+      const y = b[i]!;
+      return x.m === y.m && x.v === y.v && x.iv === y.iv && x.rs === y.rs;
+    })
+  );
 }
 
 const ChronoContext = createContext<ChronoState | null>(null);
@@ -48,6 +66,7 @@ function paramsToMix(params: Record<string, string | undefined>): MixBlock[] | n
 export function ChronoProvider({ children }: { children: ReactNode }) {
   const [cfg, setCfg] = useState<ChronoConfig>(() => loadConfig());
   const [sessionName, setSessionName] = useState('');
+  const [activeFavId, setActiveFavId] = useState<string | null>(null);
 
   const commit = useCallback((next: ChronoConfig) => {
     setCfg(next);
@@ -86,6 +105,7 @@ export function ChronoProvider({ children }: { children: ReactNode }) {
     (format: HomeFormat) => {
       const block = presetBlock(format);
       setSessionName(MODE_NAMES[format]);
+      setActiveFavId(null);
       commit({ ...cfg, mode: 'mix', mix: [block] });
     },
     [cfg, commit],
@@ -93,11 +113,13 @@ export function ChronoProvider({ children }: { children: ReactNode }) {
 
   const openEmpty = useCallback(() => {
     setSessionName('');
+    setActiveFavId(null);
     commit({ ...cfg, mode: 'mix', mix: [] });
   }, [cfg, commit]);
 
   const applySetupParams = useCallback(
     (params: Record<string, string | undefined>) => {
+      setActiveFavId(null);
       const asMix = paramsToMix(params);
       if (asMix) {
         const title = MODE_NAMES[(params.mode as ChronoMode) || 'amrap'] || '';
@@ -128,6 +150,66 @@ export function ChronoProvider({ children }: { children: ReactNode }) {
     [cfg, commit],
   );
 
+  const openFavorite = useCallback(
+    (id: string) => {
+      const fav = cfg.favs.find((f) => f.id === id);
+      if (!fav) return;
+      setSessionName(fav.name);
+      setActiveFavId(fav.id);
+      commit({
+        ...cfg,
+        mode: 'mix',
+        mix: fav.mix.map((b) => ({ ...b })),
+        cd: fav.cd ?? cfg.cd,
+      });
+    },
+    [cfg, commit],
+  );
+
+  const saveFavorite = useCallback(
+    (opts?: { asNew?: boolean }) => {
+      const name = sessionName.trim() || DEFAULT_FAV_NAME;
+      const data = {
+        name,
+        mix: cfg.mix.map((b) => ({ ...b })),
+        cd: cfg.cd,
+        updatedAt: Date.now(),
+      };
+      const existing =
+        !opts?.asNew && activeFavId ? cfg.favs.find((f) => f.id === activeFavId) : undefined;
+      if (existing) {
+        commit({
+          ...cfg,
+          favs: cfg.favs.map((f) => (f.id === existing.id ? { ...f, ...data } : f)),
+        });
+      } else {
+        const fav: MixFavorite = { id: newFavoriteId(), ...data };
+        commit({ ...cfg, favs: [fav, ...cfg.favs] });
+        setActiveFavId(fav.id);
+      }
+      setSessionName(name);
+    },
+    [cfg, commit, sessionName, activeFavId],
+  );
+
+  const deleteFavorite = useCallback(
+    (id: string) => {
+      commit({ ...cfg, favs: cfg.favs.filter((f) => f.id !== id) });
+      if (activeFavId === id) setActiveFavId(null);
+    },
+    [cfg, commit, activeFavId],
+  );
+
+  const favDirty = useMemo(() => {
+    const fav = activeFavId ? cfg.favs.find((f) => f.id === activeFavId) : undefined;
+    if (!fav) return false;
+    return (
+      (sessionName.trim() || DEFAULT_FAV_NAME) !== fav.name ||
+      (fav.cd !== undefined && fav.cd !== cfg.cd) ||
+      !sameMix(cfg.mix, fav.mix)
+    );
+  }, [activeFavId, cfg.favs, cfg.cd, cfg.mix, sessionName]);
+
   const value = useMemo(
     () => ({
       cfg,
@@ -140,8 +222,28 @@ export function ChronoProvider({ children }: { children: ReactNode }) {
       openFormat,
       openEmpty,
       applySetupParams,
+      activeFavId,
+      favDirty,
+      openFavorite,
+      saveFavorite,
+      deleteFavorite,
     }),
-    [cfg, sessionName, setMode, patch, setMix, setFavs, openFormat, openEmpty, applySetupParams],
+    [
+      cfg,
+      sessionName,
+      setMode,
+      patch,
+      setMix,
+      setFavs,
+      openFormat,
+      openEmpty,
+      applySetupParams,
+      activeFavId,
+      favDirty,
+      openFavorite,
+      saveFavorite,
+      deleteFavorite,
+    ],
   );
 
   return <ChronoContext.Provider value={value}>{children}</ChronoContext.Provider>;

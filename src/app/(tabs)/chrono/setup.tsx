@@ -14,7 +14,17 @@ export default function ChronoSetupScreen() {
   const c = useBrand();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<Record<string, string>>();
-  const { cfg, patch, setMix, sessionName, setSessionName, applySetupParams } = useChronoConfig();
+  const {
+    cfg,
+    patch,
+    setMix,
+    sessionName,
+    setSessionName,
+    applySetupParams,
+    activeFavId,
+    favDirty,
+    saveFavorite,
+  } = useChronoConfig();
 
   useEffect(() => {
     if (params.mode) applySetupParams(params);
@@ -56,6 +66,10 @@ export default function ChronoSetupScreen() {
           onChange={patch}
           onMix={setMix}
           onStart={() => router.push('/(tabs)/chrono/run')}
+          isFavorite={activeFavId !== null}
+          isDirty={favDirty}
+          onSaveFavorite={() => saveFavorite()}
+          onSaveAsNew={() => saveFavorite({ asNew: true })}
         />
       </ScrollView>
     </View>
