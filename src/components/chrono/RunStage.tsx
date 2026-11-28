@@ -51,7 +51,11 @@ export function RunStage({
   const paused = snap.phase === 'pause';
 
   return (
-    <View
+    <Pressable
+      // Keep child buttons individually reachable by VoiceOver.
+      accessible={false}
+      disabled={snap.phase === 'done'}
+      onPress={onTogglePause}
       style={[
         styles.root,
         {
@@ -224,7 +228,7 @@ export function RunStage({
           </>
         )}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
